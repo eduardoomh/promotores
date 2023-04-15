@@ -1,0 +1,8 @@
+.prop{
+    display: flex;
+    justify-content: center;
+    margin-left: 2rem;
+    margin-bottom: 3rem;
+    font-size: 3rem;
+    background-color: red;
+}

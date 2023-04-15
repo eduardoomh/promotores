@@ -24,3 +24,42 @@ a {
     background: black;
   }
 }
+
+.trigger {
+  padding: 0 24px;
+  font-size: 18px;
+  line-height: 64px;
+  cursor: pointer;
+  transition: color 0.3s;
+}
+
+ .trigger:hover {
+  color: #1890ff;
+}
+
+ .logo {
+  display: 'flex';
+  justify-content: center;
+  align-items: center;
+  height: 70px;
+  margin: 10px;
+}
+
+.site-layout .site-layout-background {
+  background: transparent;
+}
+
+.layout {
+  min-height: 100vh;
+  height: 100vh;
+}
+
+.ant-modal{
+  border-radius: 20px !important;
+}
+
+div.ant-modal-content {
+  border-radius: 20px !important;
+  max-width: 50rem;
+}
+

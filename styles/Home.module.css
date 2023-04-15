@@ -127,3 +127,16 @@
     filter: invert(1);
   }
 }
+
+.ant-modal{
+  border-radius: 20px !important;
+}
+
+div.ant-modal-content {
+  border-radius: 20px !important;
+}
+
+.ant-modal-content ::-webkit-scrollbar {
+  display: none;
+}
+
