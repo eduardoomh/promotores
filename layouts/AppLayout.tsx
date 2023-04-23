@@ -11,12 +11,20 @@ import Image from 'next/image';
 import Link from 'next/link';
 import React, { FC, PropsWithChildren, ReactElement, useState } from 'react';
 const { Header, Sider, Content } = Layout;
+import { useRouter } from "next/router";
 
 interface props {
     children: ReactElement
 }
 const AppLayout: FC<PropsWithChildren<props>> = ({ children }) => {
     const [collapsed, setCollapsed] = useState(false);
+    const router = useRouter()
+
+    if (router.pathname === '/login') return (
+        <>
+            {children}
+        </>
+    )
 
     return (
         <Layout className="layout">
@@ -69,6 +77,13 @@ const AppLayout: FC<PropsWithChildren<props>> = ({ children }) => {
                         },
                         {
                             key: '5',
+                            icon: <UploadOutlined />,
+                            label: <Link href="/usuarios" passHref>
+                                Usuarios
+                            </Link>
+                        },
+                        {
+                            key: '6',
                             icon: <UploadOutlined />,
                             label: <Link href="/configuracion" passHref>
                                 Configuración

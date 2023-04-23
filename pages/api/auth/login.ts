@@ -1,4 +1,3 @@
-/*
 import { sign } from "jsonwebtoken";
 import { serialize } from "cookie";
 
@@ -32,4 +31,3 @@ export default function loginHandler(req: any, res: any) {
 
   return res.status(401).json({ error: "Invalid credentials" });
 }
-*/

@@ -6,6 +6,8 @@ import CardContainer from "../containers/CardContainer";
 import {
     EyeOutlined
 } from '@ant-design/icons'
+import { UserDataI } from "../../interfaces/user.interfaces";
+import moment from "moment";
 
 interface DataType {
     key: string;
@@ -23,7 +25,7 @@ interface DataType2 {
     commission: number;
 }
 
-interface BalanceI{
+interface BalanceI {
     amount: number;
     before: number;
     after: number;
@@ -205,7 +207,46 @@ const getPromoterColumns = (changeCurrentPromoter: any) => {
 
 }
 
-type TypeTableI = 'COMMISSIONS' | 'ORDERS' | 'PROMOTERS' | 'MOVEMENTS';
+const getUserColumns = (changeCurrentPromoter: any) => {
+    const usersColumns: ColumnsType<DataType2> = [
+        {
+            title: 'Correo',
+            dataIndex: 'email',
+            key: 'email',
+        },
+        {
+            title: 'Rol',
+            dataIndex: 'role',
+            key: 'role',
+        },
+        {
+            title: 'Registro',
+            dataIndex: 'created_at',
+            key: 'created_at',
+            render: (data: UserDataI) =>{
+                return moment(data?.created_at).format("DD-MM-YYYY")
+            }
+        },
+        {
+            title: 'Detalles',
+            render: (data: PromoterDataI) =>
+                <Button
+                    onClick={() => changeCurrentPromoter(data)}
+                    style={{ display: 'flex', alignItems: 'center' }}
+                    icon={<EyeOutlined />}
+                    type="primary"
+                    ghost
+                >
+                    detalles
+                </Button>
+        },
+    ];
+
+    return usersColumns
+
+}
+
+type TypeTableI = 'COMMISSIONS' | 'ORDERS' | 'PROMOTERS' | 'MOVEMENTS' | 'USERS';
 
 interface props {
     type: TypeTableI;
@@ -227,6 +268,8 @@ const CustomTable: FC<props> = ({ type, data, loading, size = 5, assignNewPromot
                 return getPromoterColumns(assignNewPromoter)
             case 'MOVEMENTS':
                 return movementsColumns
+            case 'USERS':
+                return getUserColumns(assignNewPromoter)
             default:
                 return commissionsColumns
         }
