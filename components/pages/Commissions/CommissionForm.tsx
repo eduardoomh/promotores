@@ -4,7 +4,7 @@ import InputContainer from "../../containers/InputContainer"
 import { addCommission, editCommission } from '../../../services/commission_s'
 import { usePost } from "../../../hooks/usePost"
 import { usePatch } from "../../../hooks/usePatch"
-import { NewPromoterDataI, PromoterDataI } from "../../../interfaces/promoter.interfaces"
+import { PromoterDataI } from "../../../interfaces/promoter.interfaces"
 import { FC, useEffect, useState } from "react"
 import { CommissionDataI, NewCommissionDataI } from "../../../interfaces/commission.interfaces"
 
@@ -19,7 +19,16 @@ interface props {
     promoters: PromoterDataI[]
 }
 
-const CommissionForm: FC<props> = ({ showModal, changeCommission, editMode, commission, changeLoadingList, changeEditMode, pushCommission, promoters }) => {
+const CommissionForm: FC<props> = ({ 
+    showModal, 
+    changeCommission, 
+    editMode, 
+    commission, 
+    changeLoadingList, 
+    changeEditMode, 
+    pushCommission, 
+    promoters 
+}) => {
     const [form] = Form.useForm()
     const { fetchData, isLoading: isLoadingCreate } = usePost(addCommission)
     const { fetchDataPatch, isLoadingPatch, dataPatch } = usePatch(editCommission)
@@ -37,11 +46,9 @@ const CommissionForm: FC<props> = ({ showModal, changeCommission, editMode, comm
                     commission: data.commission
                 }
             })
-            console.log(response)
             if (!response.error) {
                 form.resetFields()
-                message.success('El promotor ha sido guardado exitosamente.')
-                console.log(response.data, "esta dataaa")
+                message.success('La comisión ha sido guardado exitosamente.')
                 pushCommission(response.data as CommissionDataI)
                 showModal('CREATE')
                 setTimeout(() => {
@@ -76,7 +83,7 @@ const CommissionForm: FC<props> = ({ showModal, changeCommission, editMode, comm
 
             if (!response?.error) {
                 changeCommission(dataPatch as CommissionDataI)
-                message.success('El promotor ha sido actualizado exitosamente.')
+                message.success('La comisión ha sido actualizado exitosamente.')
                 showModal('MODIFY')
                 changeEditMode(false)
                 changeLoadingList(false)
@@ -135,7 +142,7 @@ const CommissionForm: FC<props> = ({ showModal, changeCommission, editMode, comm
                                     promoters && promoters.map((el: PromoterDataI) => {
                                         return {
                                             value: el._id,
-                                            label: `${el.name} ${el.last_name}`,
+                                            label: `${el.name} ${el.last_name} - ${el.email}`,
                                         }
                                     })
                                 }

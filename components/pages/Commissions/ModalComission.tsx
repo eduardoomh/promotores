@@ -6,20 +6,26 @@ import {
   } from '@ant-design/icons'
 import { FC } from "react"
 import ModalContainer, { modalHeight, modalSizes } from "../../containers/ModalContainer"
-import UserView from "./UserView"
-import { UserDataI } from "../../../interfaces/user.interfaces"
+import ComissionView from "./ComissionView"
+import { CommissionDataI } from "../../../interfaces/commission.interfaces"
 
 interface props{
     modalTitle: string;
     openModal: boolean;
-    user: UserDataI | undefined;
+    comission: CommissionDataI | undefined;
     isLoadingDelete: boolean;
     closeModal: () => void;
-    changeEditMode: (state: boolean) => void;
-    dropUser: (id: string) => void;
+    dropComission: (id: string) => void;
     
 }
-const ModalUser: FC<props> = ({modalTitle, openModal, closeModal, isLoadingDelete, user, dropUser, changeEditMode}) =>{
+const ModalComission: FC<props> = ({
+    modalTitle, 
+    openModal, 
+    closeModal, 
+    isLoadingDelete, 
+    comission, 
+    dropComission, 
+}) =>{
     return(
         <ModalContainer
         title={modalTitle}
@@ -34,8 +40,8 @@ const ModalUser: FC<props> = ({modalTitle, openModal, closeModal, isLoadingDelet
               placement="topLeft"
               cancelButtonProps={{ type: 'primary', ghost: true }}
               okButtonProps={{ danger: true }}
-              title='Está seguro que desea eliminar este usuario?'
-              onConfirm={() => dropUser(user?._id as string)}
+              title='Está seguro que desea eliminarla comisión?'
+              onConfirm={() => dropComission(comission?._id as string)}
               icon={<QuestionCircleOutlined style={{ color: 'red' }} />}
               okText="Si"
               cancelText="No"
@@ -48,16 +54,6 @@ const ModalUser: FC<props> = ({modalTitle, openModal, closeModal, isLoadingDelet
                 Eliminar
               </Button>
             </Popconfirm>
-
-            <Button
-              onClick={() => changeEditMode(true)}
-              style={{ display: 'flex', alignItems: 'center' }}
-              icon={<EditOutlined />}
-              type="primary"
-              ghost
-            >
-              Modificar
-            </Button>
             <Button
               onClick={closeModal}
             >
@@ -67,12 +63,12 @@ const ModalUser: FC<props> = ({modalTitle, openModal, closeModal, isLoadingDelet
         ]}
       >
         <Spin spinning={isLoadingDelete}>
-          <UserView
-            user={user}
+          <ComissionView
+            comission={comission}
           />
         </Spin>
       </ModalContainer>
     )
 }
 
-export default ModalUser
+export default ModalComission

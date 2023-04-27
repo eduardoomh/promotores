@@ -1,5 +1,5 @@
 import { apiProps, apiResponse } from '../interfaces/app.interfaces'
-import { AddUserDataI } from '../interfaces/user.interfaces'
+import { AddUserDataI, EditUserDataI, LoginUserI, ModifyUserDataI } from '../interfaces/user.interfaces'
 
 export const getUsers = async (backendApiCall: (data: apiProps) => Promise<apiResponse>) => {
   return await backendApiCall({
@@ -18,7 +18,7 @@ export const addUser =
   }
 
 export const editUser =
-  (Id: String, dto: AddUserDataI) => async (backendApiCall: (data: apiProps) => Promise<apiResponse>) => {
+  (Id: String, dto: EditUserDataI) => async (backendApiCall: (data: apiProps) => Promise<apiResponse>) => {
     return await backendApiCall({
       method: 'PATCH',
       endpoint: `users/${Id}`,
@@ -34,3 +34,13 @@ export const deleteUser =
       data: {},
     })
   }
+
+  export const loginUser =
+  (dto: LoginUserI) => async (backendApiCall: (data: apiProps) => Promise<apiResponse>) => {
+    return await backendApiCall({
+      method: 'POST',
+      endpoint: 'auth/login',
+      data: dto
+    })
+  }
+

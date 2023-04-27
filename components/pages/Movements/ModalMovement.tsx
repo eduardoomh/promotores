@@ -1,25 +1,30 @@
 import { Row, Popconfirm, Button, Spin } from "antd"
 import {
-    EditOutlined,
     DeleteOutlined,
     QuestionCircleOutlined
   } from '@ant-design/icons'
 import { FC } from "react"
 import ModalContainer, { modalHeight, modalSizes } from "../../containers/ModalContainer"
-import UserView from "./UserView"
-import { UserDataI } from "../../../interfaces/user.interfaces"
+import MovementView from "./MovementView"
+import { MovementDataI } from "../../../interfaces/movement.interfaces"
 
 interface props{
     modalTitle: string;
     openModal: boolean;
-    user: UserDataI | undefined;
+    movement: MovementDataI | undefined;
     isLoadingDelete: boolean;
     closeModal: () => void;
-    changeEditMode: (state: boolean) => void;
-    dropUser: (id: string) => void;
+    dropMovement: (id: string) => void;
     
 }
-const ModalUser: FC<props> = ({modalTitle, openModal, closeModal, isLoadingDelete, user, dropUser, changeEditMode}) =>{
+const ModalMovement: FC<props> = ({
+    modalTitle, 
+    openModal, 
+    closeModal, 
+    isLoadingDelete, 
+    movement, 
+    dropMovement, 
+}) =>{
     return(
         <ModalContainer
         title={modalTitle}
@@ -34,8 +39,8 @@ const ModalUser: FC<props> = ({modalTitle, openModal, closeModal, isLoadingDelet
               placement="topLeft"
               cancelButtonProps={{ type: 'primary', ghost: true }}
               okButtonProps={{ danger: true }}
-              title='Está seguro que desea eliminar este usuario?'
-              onConfirm={() => dropUser(user?._id as string)}
+              title='Está seguro que desea eliminar el movimiento?'
+              onConfirm={() => dropMovement(movement?._id as string)}
               icon={<QuestionCircleOutlined style={{ color: 'red' }} />}
               okText="Si"
               cancelText="No"
@@ -48,16 +53,6 @@ const ModalUser: FC<props> = ({modalTitle, openModal, closeModal, isLoadingDelet
                 Eliminar
               </Button>
             </Popconfirm>
-
-            <Button
-              onClick={() => changeEditMode(true)}
-              style={{ display: 'flex', alignItems: 'center' }}
-              icon={<EditOutlined />}
-              type="primary"
-              ghost
-            >
-              Modificar
-            </Button>
             <Button
               onClick={closeModal}
             >
@@ -67,12 +62,12 @@ const ModalUser: FC<props> = ({modalTitle, openModal, closeModal, isLoadingDelet
         ]}
       >
         <Spin spinning={isLoadingDelete}>
-          <UserView
-            user={user}
+          <MovementView
+            movement={movement}
           />
         </Spin>
       </ModalContainer>
     )
 }
 
-export default ModalUser
+export default ModalMovement

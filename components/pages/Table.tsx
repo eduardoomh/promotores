@@ -6,8 +6,8 @@ import CardContainer from "../containers/CardContainer";
 import {
     EyeOutlined
 } from '@ant-design/icons'
-import { UserDataI } from "../../interfaces/user.interfaces";
 import moment from "moment";
+import { getUserRole } from "../../utils/formatDataHelpers";
 
 interface DataType {
     key: string;
@@ -66,110 +66,57 @@ const columns: ColumnsType<DataType> = [
     },
 ];
 
-const commissionsColumns: ColumnsType<DataType2> = [
-    {
-        title: 'Promotor',
-        dataIndex: 'promoter',
-        key: 'promoter',
-        render: (promoter: PromoterDataI) => (
-            <>
-                <p>{promoter?.name}</p>
-                <p>{promoter?.last_name}</p>
-            </>
 
-        ),
-    },
-    {
-        title: 'Código promocional',
-        key: 'code',
-        dataIndex: 'code',
-        render: text => <Tag color='geekblue'>
-            {text?.toUpperCase()}
-        </Tag>
-    },
-    {
-        title: 'Descuento',
-        dataIndex: 'discount',
-        key: 'discount',
-    },
-    {
-        title: 'Comisión',
-        dataIndex: 'commission',
-        key: 'commission',
-    },
-];
+const getComissionsColumns = (changeCurrentComission: any) => {
+    const comissionsColumns: ColumnsType<DataType2> = [
+        {
+            title: 'Promotor',
+            dataIndex: 'promoter',
+            key: 'promoter',
+            render: (promoter: PromoterDataI) => (
+                <>
+                    <p>{promoter?.name}</p>
+                    <p>{promoter?.last_name}</p>
+                </>
+    
+            ),
+        },
+        {
+            title: 'Código promocional',
+            key: 'code',
+            dataIndex: 'code',
+            render: text => <Tag color='geekblue'>
+                {text?.toUpperCase()}
+            </Tag>
+        },
+        {
+            title: 'Descuento',
+            dataIndex: 'discount',
+            key: 'discount',
+        },
+        {
+            title: 'Comisión',
+            dataIndex: 'commission',
+            key: 'commission',
+        },
+        {
+            title: 'Detalles',
+            render: (data: PromoterDataI) =>
+                <Button
+                    onClick={() => changeCurrentComission(data)}
+                    style={{ display: 'flex', alignItems: 'center' }}
+                    icon={<EyeOutlined />}
+                    type="primary"
+                    ghost
+                >
+                    detalles
+                </Button>
+        },
+    ];
 
-const movementsColumns: ColumnsType<DataType2> = [
-    {
-        title: 'Pedido',
-        dataIndex: 'order_number',
-        key: 'order_number',
-    },
-    {
-        title: 'Promotor',
-        dataIndex: 'promoter',
-        key: 'promoter',
-        render: (promoter: PromoterDataI) => (
-            <>
-                <p>{promoter?.name}</p>
-                <p>{promoter?.last_name}</p>
-            </>
+    return comissionsColumns
 
-        ),
-    },
-    {
-        title: 'Código promocional',
-        key: 'code',
-        dataIndex: 'code',
-        render: text => <Tag color='geekblue'>
-            {text?.toUpperCase()}
-        </Tag>
-    },
-    {
-        title: 'Descuento',
-        dataIndex: 'discount',
-        key: 'discount',
-    },
-    {
-        title: 'Comisión',
-        dataIndex: 'commission',
-        key: 'commission',
-    },
-    {
-        title: 'Pagado',
-        dataIndex: 'balance',
-        key: 'balance',
-        render: (balance: BalanceI) => (
-            <>
-                <p>{balance.amount}</p>
-            </>
-
-        ),
-    },
-    {
-        title: 'Saldo Anterior',
-        dataIndex: 'balance',
-        key: 'balance',
-        render: (balance: BalanceI) => (
-            <>
-                <p>{balance.before}</p>
-            </>
-
-        ),
-    },
-    {
-        title: 'Saldo después',
-        dataIndex: 'balance',
-        key: 'balance',
-        render: (balance: BalanceI) => (
-            <>
-                <p>{balance.after}</p>
-            </>
-
-        ),
-    },
-];
-
+}
 
 const getPromoterColumns = (changeCurrentPromoter: any) => {
     const promotersColumns: ColumnsType<DataType2> = [
@@ -218,13 +165,16 @@ const getUserColumns = (changeCurrentPromoter: any) => {
             title: 'Rol',
             dataIndex: 'role',
             key: 'role',
+            render: (data: string) =>{
+                return <Tag>{getUserRole(data)}</Tag>
+            }
         },
         {
             title: 'Registro',
             dataIndex: 'created_at',
             key: 'created_at',
-            render: (data: UserDataI) =>{
-                return moment(data?.created_at).format("DD-MM-YYYY")
+            render: (data: string) =>{
+                return moment(data).format("DD-MM-YYYY")
             }
         },
         {
@@ -232,6 +182,95 @@ const getUserColumns = (changeCurrentPromoter: any) => {
             render: (data: PromoterDataI) =>
                 <Button
                     onClick={() => changeCurrentPromoter(data)}
+                    style={{ display: 'flex', alignItems: 'center' }}
+                    icon={<EyeOutlined />}
+                    type="primary"
+                    ghost
+                >
+                    detalles
+                </Button>
+        },
+    ];
+
+    return usersColumns
+
+}
+
+const getMovementColumns = (changeCurrentMovement: any) => {
+    const usersColumns: ColumnsType<DataType2> = [
+        {
+            title: 'Pedido',
+            dataIndex: 'order_number',
+            key: 'order_number',
+        },
+        {
+            title: 'Promotor',
+            dataIndex: 'promoter',
+            key: 'promoter',
+            render: (promoter: PromoterDataI) => (
+                <>
+                    <p>{promoter?.name}</p>
+                    <p>{promoter?.last_name}</p>
+                </>
+    
+            ),
+        },
+        {
+            title: 'Código promocional',
+            key: 'code',
+            dataIndex: 'code',
+            render: text => <Tag color='geekblue'>
+                {text?.toUpperCase()}
+            </Tag>
+        },
+        {
+            title: 'Descuento',
+            dataIndex: 'discount',
+            key: 'discount',
+        },
+        {
+            title: 'Comisión',
+            dataIndex: 'commission',
+            key: 'commission',
+        },
+        {
+            title: 'Pagado',
+            dataIndex: 'balance',
+            key: 'balance',
+            render: (balance: BalanceI) => (
+                <>
+                    <p>{balance.amount}</p>
+                </>
+    
+            ),
+        },
+        {
+            title: 'Saldo Anterior',
+            dataIndex: 'balance',
+            key: 'balance',
+            render: (balance: BalanceI) => (
+                <>
+                    <p>{balance.before}</p>
+                </>
+    
+            ),
+        },
+        {
+            title: 'Saldo después',
+            dataIndex: 'balance',
+            key: 'balance',
+            render: (balance: BalanceI) => (
+                <>
+                    <p>{balance.after}</p>
+                </>
+    
+            ),
+        },
+        {
+            title: 'Detalles',
+            render: (data: PromoterDataI) =>
+                <Button
+                    onClick={() => changeCurrentMovement(data)}
                     style={{ display: 'flex', alignItems: 'center' }}
                     icon={<EyeOutlined />}
                     type="primary"
@@ -261,17 +300,17 @@ const CustomTable: FC<props> = ({ type, data, loading, size = 5, assignNewPromot
     const getColumnsByTable = (type: TypeTableI) => {
         switch (type) {
             case 'COMMISSIONS':
-                return commissionsColumns
+                return getComissionsColumns(assignNewPromoter)
             case 'ORDERS':
-                return commissionsColumns
+                return getComissionsColumns(assignNewPromoter)
             case 'PROMOTERS':
                 return getPromoterColumns(assignNewPromoter)
             case 'MOVEMENTS':
-                return movementsColumns
+                return  getMovementColumns(assignNewPromoter)
             case 'USERS':
                 return getUserColumns(assignNewPromoter)
             default:
-                return commissionsColumns
+                return getComissionsColumns(assignNewPromoter)
         }
     }
 

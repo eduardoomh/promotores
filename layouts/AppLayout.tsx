@@ -12,6 +12,7 @@ import Link from 'next/link';
 import React, { FC, PropsWithChildren, ReactElement, useState } from 'react';
 const { Header, Sider, Content } = Layout;
 import { useRouter } from "next/router";
+import axios from 'axios';
 
 interface props {
     children: ReactElement
@@ -25,6 +26,12 @@ const AppLayout: FC<PropsWithChildren<props>> = ({ children }) => {
             {children}
         </>
     )
+
+    const logout = async () => {
+        const logout = await axios.get('http://localhost:3000/api/auth/logout')
+        router.push("/login")
+        console.log(logout)
+    }
 
     return (
         <Layout className="layout">
@@ -51,35 +58,35 @@ const AppLayout: FC<PropsWithChildren<props>> = ({ children }) => {
                             key: '1',
                             icon: <UserOutlined />,
                             label: <Link href="/" passHref>
-                                Descuentos
+                                Inicio
                             </Link>
                         },
                         {
                             key: '2',
-                            icon: <VideoCameraOutlined />,
-                            label: <Link href="/comisiones" passHref>
-                                Comisiones
+                            icon: <UploadOutlined />,
+                            label: <Link href="/usuarios" passHref>
+                                Usuarios
                             </Link>
                         },
                         {
                             key: '3',
-                            icon: <UploadOutlined />,
-                            label: <Link href="/pagos" passHref>
-                                Pagos
-                            </Link>
-                        },
-                        {
-                            key: '4',
                             icon: <UploadOutlined />,
                             label: <Link href="/promotores" passHref>
                                 Promotores
                             </Link>
                         },
                         {
+                            key: '4',
+                            icon: <VideoCameraOutlined />,
+                            label: <Link href="/comisiones" passHref>
+                                Comisiones
+                            </Link>
+                        },
+                        {
                             key: '5',
                             icon: <UploadOutlined />,
-                            label: <Link href="/usuarios" passHref>
-                                Usuarios
+                            label: <Link href="/pagos" passHref>
+                                Pagos
                             </Link>
                         },
                         {
@@ -88,6 +95,11 @@ const AppLayout: FC<PropsWithChildren<props>> = ({ children }) => {
                             label: <Link href="/configuracion" passHref>
                                 Configuración
                             </Link>
+                        },
+                        {
+                            key: '7',
+                            icon: <UploadOutlined />,
+                            label: <a onClick={logout}> Cerrar Sesión</a>
                         },
                     ]}
                 />

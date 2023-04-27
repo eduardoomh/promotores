@@ -2,13 +2,13 @@
 import mongoose from 'mongoose'
 import type { NextApiRequest, NextApiResponse } from 'next'
 import { db } from '../../../database/connection'
-import Promotor from '../../../database/models/Promoter'
-import { PromoterDataI } from '../../../interfaces/promoter.interfaces'
 import User from '../../../database/models/User'
+import { UserDataI } from '../../../interfaces/user.interfaces'
+import { encrypt } from '../../../utils/HashHelpers'
 
 type Data =
     | { message: string }
-    | PromoterDataI
+    | UserDataI
 
 export default async function handler(
     req: NextApiRequest,
@@ -24,9 +24,9 @@ export default async function handler(
         case 'GET':
             return getEntry(req, res)
         case 'PATCH':
-            return updatePromoter(req, res)
+            return updateUser(req, res)
         case 'DELETE':
-            return deletePromoter(req, res)
+            return deleteUser(req, res)
         default:
             return res.status(400).json({ message: 'El método no existe' })
     }
@@ -37,7 +37,7 @@ const getEntry = async (req: NextApiRequest, res: NextApiResponse) => {
     const { id } = req.query
 
     await db.connect()
-    const entryToGet = await Promotor.findById(id)
+    const entryToGet = await User.findById(id)
     await db.disconnect()
 
     if (!entryToGet) {
@@ -48,32 +48,33 @@ const getEntry = async (req: NextApiRequest, res: NextApiResponse) => {
 
 }
 
-const updatePromoter = async (req: NextApiRequest, res: NextApiResponse) => {
+const updateUser = async (req: NextApiRequest, res: NextApiResponse) => {
 
     const { id } = req.query
 
     await db.connect()
-    const promoterToUpdate = await Promotor.findById(id)
+    const userToUpdate = await User.findById(id)
 
-    if (!promoterToUpdate) {
+    if (!userToUpdate) {
         await db.disconnect()
-        return res.status(400).json({ message: 'No hay promotores con ese Id' })
+        return res.status(400).json({ message: 'No hay usuarios con ese Id' })
     }
 
-    const { promoter } = req.body
-    const existUser = await User.findOne({ _id: promoter.user_id })
-
-    if (!existUser) {
-        res.status(400).json({ message: "El usuario no existe, intente de nuevo." })
-    }
+    const { user } = req.body
 
     try {
-        const updatedPromotor = await Promotor.findByIdAndUpdate(
-            id,
-            { 
-                ...promoter,
-                email: existUser?.email
-            },
+        let userData = user
+        if (user?.password) {
+            userData = {
+                ...userData,
+                password: await encrypt(user?.password),
+            }
+        }
+        const updatedPromotor = await User.findByIdAndUpdate(
+            id, { 
+                ...userData,
+                updated_at: Date.now()
+            }, 
             { runValidators: true, new: true }
         )
         db.disconnect()
@@ -93,11 +94,12 @@ const updatePromoter = async (req: NextApiRequest, res: NextApiResponse) => {
 
 }
 
-const deletePromoter = async (req: NextApiRequest, res: NextApiResponse) => {
+const deleteUser = async (req: NextApiRequest, res: NextApiResponse) => {
     const { id } = req.query
 
     await db.connect()
-    const promoterDelete = await Promotor.deleteOne({ _id: id })
+    const promoterDelete = await User.deleteOne({ _id: id })
+    console.log(promoterDelete)
     await db.disconnect()
 
     if (!promoterDelete) {

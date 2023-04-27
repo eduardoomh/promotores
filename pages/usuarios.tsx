@@ -23,6 +23,7 @@ const Usuarios: FC<props> = ({ promoters }) => {
   const [usersArray, setUserArray] = useState<UserDataI[] | unknown>(promoters)
   const [user, setUser] = useState<UserDataI | undefined>(undefined)
   const [editMode, setEditMode] = useState<boolean>(false)
+  const [editPassword, setEditPassword] = useState<boolean>(false)
   const { fetchDataDelete, isLoadingDelete } = useDelete(deletePromoter)
   const [loadingList, setloadingList] = useState<boolean>(false)
   const [modalTitle, setModalTitle] = useState<string>('Crear Nuevo Usuario')
@@ -36,19 +37,19 @@ const Usuarios: FC<props> = ({ promoters }) => {
   const showModal = (type?: 'CREATE' | 'MODIFY') => {
     switch (type) {
       case 'CREATE':
-        setModalTitle('Nuevo promotor')
+        setModalTitle('Nuevo usuario')
         break
       case 'MODIFY':
-        setModalTitle('Promotor Actualizado')
+        setModalTitle('Usuario Actualizado')
         break
       default:
-        setModalTitle('Información del Promotor')
+        setModalTitle('Información del Usuario')
         break
     }
     setOpenModal(true)
   }
 
-  const assignNewPromoter = (user: UserDataI) =>{
+  const assignNewUser = (user: UserDataI) =>{
     console.log(user)
     changeCurrentUser(user)
     showModal()
@@ -68,10 +69,15 @@ const Usuarios: FC<props> = ({ promoters }) => {
 
   const changeEditMode = (state: boolean) => {
     setEditMode(state)
+    setEditPassword(false)
 
     if (state) {
       closeModal()
     }
+  }
+
+  const changeEditPassword = (state: boolean) => {
+    setEditPassword(state)
   }
 
   const refetchingUsers = async () => {
@@ -141,6 +147,8 @@ const Usuarios: FC<props> = ({ promoters }) => {
             changeLoadingList={changeLoadingList}
             changeEditMode={changeEditMode}
             pushUser={pushUser}
+            editPassword={editPassword}
+            changeEditPassword={changeEditPassword}
 
           />
         </Col>
@@ -165,7 +173,7 @@ const Usuarios: FC<props> = ({ promoters }) => {
                   data={usersArray as any[]}
                   loading={loadingList}
                   size={10}
-                  assignNewPromoter={assignNewPromoter}
+                  assignNewPromoter={assignNewUser}
                 />
               </>
             )

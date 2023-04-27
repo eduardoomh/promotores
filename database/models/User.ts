@@ -2,6 +2,9 @@ import mongoose, { Model, Schema } from 'mongoose'
 import { UserDataI } from '../../interfaces/user.interfaces'
 
 const userSchema = new Schema({
+    name: {
+        type: String,
+    },
     email: {
         type: String,
         unique: true

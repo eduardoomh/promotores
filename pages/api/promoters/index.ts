@@ -3,6 +3,7 @@ import type { NextApiRequest, NextApiResponse } from 'next'
 import { db } from '../../../database/connection'
 import Promotor from '../../../database/models/Promoter'
 import { PromoterDataI } from '../../../interfaces/promoter.interfaces'
+import User from '../../../database/models/User'
 
 type Data =
     | { message: string }
@@ -38,8 +39,16 @@ const getPromotores = async (res: NextApiResponse<Data>) => {
 const postPromoter = async (req: NextApiRequest, res: NextApiResponse<Data>) =>{
     const { promoter } = req.body
 
+    await db.connect()
+    const findUser = await User.findOne({_id: promoter.user_id})
+    if(!findUser){
+        await db.disconnect()
+        return res.status(500).json({message: "Usuario ingresado no existe, intente de nuevo."})
+    }
+
     const newPromoter = new Promotor({
         ...promoter,
+        email: findUser.email,
         type: 'active',
         created_at: Date.now(),
         updated_at: Date.now()
@@ -48,7 +57,6 @@ const postPromoter = async (req: NextApiRequest, res: NextApiResponse<Data>) =>{
     console.log(promoter, newPromoter)
 
     try{
-        await db.connect()
         newPromoter.save()
         await db.disconnect()
         return res.status(201).json(newPromoter)

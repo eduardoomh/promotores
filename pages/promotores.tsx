@@ -11,12 +11,14 @@ import { deletePromoter } from '../services/promoter_s';
 import ModalPromoter from '../components/pages/Promotores/ModalPromoter';
 import CustomTable from '../components/pages/Table';
 import { GenericContext } from '../context/GenericContext';
+import { UserDataI } from '../interfaces/user.interfaces';
 
 interface props {
-  promoters: PromoterDataI[]
+  promoters: PromoterDataI[];
+  users: UserDataI[];
 }
 
-const Promotores: FC<props> = ({ promoters }) => {
+const Promotores: FC<props> = ({ promoters, users }) => {
   const [openModal, setOpenModal] = useState<boolean>(false)
   const [promotersArray, setPromoterArray] = useState<PromoterDataI[] | unknown>(promoters)
   const [promoter, setPromoter] = useState<PromoterDataI | undefined>(undefined)
@@ -47,7 +49,6 @@ const Promotores: FC<props> = ({ promoters }) => {
   }
 
   const assignNewPromoter = (promoter: PromoterDataI) =>{
-    console.log(promoter)
     changeCurrentPromoter(promoter)
     showModal()
   }
@@ -140,6 +141,7 @@ const Promotores: FC<props> = ({ promoters }) => {
             changeLoadingList={changeLoadingList}
             changeEditMode={changeEditMode}
             pushPromoters={pushPromoters}
+            users={users}
 
           />
         </Col>
@@ -159,15 +161,6 @@ const Promotores: FC<props> = ({ promoters }) => {
                 <CardContainer cardStyle={{ marginBottom: '1rem', display: 'flex', justifyContent: 'center' }}>
                   <Typography.Title level={4} >Promotores Registrados</Typography.Title>
                 </CardContainer>
-                {/*
-                  <PromotoresList
-                    promoters={promotersArray}
-                    changePromoter={changePromoter}
-                    showModal={showModal}
-                    editMode={editMode}
-                    loadingList={loadingList}
-                  />
-                */}
                 <CustomTable
                   type='PROMOTERS'
                   data={promotersArray as any[]}
@@ -196,7 +189,9 @@ const Promotores: FC<props> = ({ promoters }) => {
 export const getServerSideProps: GetServerSideProps = async ({ params }) => {
 
   const promoters = await axios.get('http://localhost:3000/api/promoters')
+  const users = await axios.get('http://localhost:3000/api/users/role/promoter')
   console.log(promoters.data)
+  console.log(users.data)
   if (!promoters) {
     return {
       redirect: {
@@ -208,7 +203,8 @@ export const getServerSideProps: GetServerSideProps = async ({ params }) => {
 
   return {
     props: {
-      promoters: promoters.data
+      promoters: promoters.data,
+      users: users.data
     }
   }
 }

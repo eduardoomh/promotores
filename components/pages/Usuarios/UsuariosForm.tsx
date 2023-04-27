@@ -1,32 +1,37 @@
-import { Typography, Divider, Form, Row, Col, message, Spin } from "antd"
+import { Typography, Divider, Form, Row, Col, message, Spin, Button } from "antd"
 import CardContainer from "../../containers/CardContainer"
 import InputContainer from "../../containers/InputContainer"
 import { addUser, editUser } from '../../../services/user_s'
 import { usePost } from "../../../hooks/usePost"
 import { usePatch } from "../../../hooks/usePatch"
 import { FC, useEffect } from "react"
-import { NewUserDataI, UserDataI } from "../../../interfaces/user.interfaces"
+import { EditUserDataI, ModifyUserDataI, NewUserDataI, UserDataI } from "../../../interfaces/user.interfaces"
 
 interface props {
-  showModal: (type?: 'CREATE' | 'MODIFY') => void
-  changeUser: (promoter: UserDataI) => void
-  changeLoadingList: (state: boolean) => void
-  changeEditMode: (state: boolean) => void
-  refetchingPromotors: () => void
-  pushUser: (user: UserDataI) => void
-  editMode: boolean
-  user: UserDataI | undefined
+  showModal: (type?: 'CREATE' | 'MODIFY') => void;
+  changeUser: (promoter: UserDataI) => void;
+  changeLoadingList: (state: boolean) => void;
+  changeEditMode: (state: boolean) => void;
+  refetchingPromotors: () => void;
+  pushUser: (user: UserDataI) => void;
+  editMode: boolean;
+  user: UserDataI | undefined;
+  editPassword: boolean;
+  changeEditPassword: (state: boolean) => void;
 }
 
-const UsuariosForm: FC<props> = ({ 
-    showModal, 
-    changeUser, 
-    editMode, 
-    user, 
-    refetchingPromotors, 
-    changeLoadingList, 
-    changeEditMode, 
-    pushUser }) => {
+const UsuariosForm: FC<props> = ({
+  showModal,
+  changeUser,
+  editMode,
+  user,
+  refetchingPromotors,
+  changeLoadingList,
+  changeEditMode,
+  pushUser,
+  editPassword,
+  changeEditPassword
+}) => {
   const [form] = Form.useForm()
   const { fetchData, isLoading: isLoadingCreate } = usePost(addUser)
   const { fetchDataPatch, isLoadingPatch, dataPatch } = usePatch(editUser)
@@ -36,6 +41,7 @@ const UsuariosForm: FC<props> = ({
       changeLoadingList(true)
       const response = await fetchData({
         user: {
+          name: data.name,
           email: data.email,
           password: data.password,
           role: data.role,
@@ -52,7 +58,7 @@ const UsuariosForm: FC<props> = ({
         }, 1000)
 
 
-      }else{
+      } else {
         //@ts-ignore
         message.error(response.error.message)
         changeLoadingList(false)
@@ -65,19 +71,17 @@ const UsuariosForm: FC<props> = ({
     }
   }
 
-  const onFinishEdit = async (data: NewUserDataI) => {
+  const onFinishEdit = async (data: ModifyUserDataI) => {
     try {
       changeLoadingList(true)
       const response = await fetchDataPatch(
         user?._id as string,
         {
           user: {
-            email: data.email,
-            password: data.password,
-            role: data.role,
+           ...data,
           }
         })
-        console.log(response, "respuestsss")
+      console.log(response, "respuestsss")
 
       if (!response?.error) {
         changeUser(dataPatch as UserDataI)
@@ -100,8 +104,9 @@ const UsuariosForm: FC<props> = ({
   useEffect(() => {
     if (editMode) {
       form.setFieldsValue({
+        name: user?.name,
         email: user?.email,
-        password: user?.password,
+        role: user?.role
       })
     } else {
       form.resetFields()
@@ -119,6 +124,17 @@ const UsuariosForm: FC<props> = ({
         <Spin spinning={editMode ? isLoadingPatch : isLoadingCreate}>
           <Row>
             <Col span={24}>
+              <Typography>Nombre</Typography>
+              <InputContainer
+                type="text"
+                required
+                placeholder='Nombre'
+                valueContainerName="name"
+              />
+            </Col>
+          </Row>
+          <Row>
+            <Col span={24}>
               <Typography>Correo</Typography>
               <InputContainer
                 type="email"
@@ -130,13 +146,58 @@ const UsuariosForm: FC<props> = ({
           </Row>
           <Row gutter={[10, 5]}>
             <Col span={24}>
-              <Typography>Contraseña</Typography>
-              <InputContainer
-                type="password"
-                required
-                placeholder='Contraseña'
-                valueContainerName="password"
-              />
+              {
+                editMode ? (
+                  <>
+                    {
+                      editPassword ? (
+                        <>
+                          <Typography>Nueva Contraseña</Typography>
+                          <InputContainer
+                            type="password"
+                            required
+                            placeholder='Contraseña'
+                            valueContainerName="password"
+                          />
+                          <Button
+                            style={{
+                              marginBottom: "2rem",
+                            }}
+                            onClick={() => changeEditPassword(false)}
+                          >
+                            No cambiar contraseña
+                          </Button>
+                        </>
+                      ) : (
+                        <>
+                          <Typography>Has olvidado tu contraseña?</Typography>
+                          <Button
+                            style={{
+                              marginBottom: "2rem",
+                              marginTop: "0.5rem"
+                            }}
+                            onClick={() => changeEditPassword(true)}
+                          >
+                            Actualizar Contraseña
+                          </Button>
+                        </>
+                      )
+                    }
+                  </>
+                ) : (
+                  <>
+                    <Typography>Contraseña</Typography>
+                    <InputContainer
+                      type="password"
+                      required
+                      placeholder='Contraseña'
+                      valueContainerName="password"
+                      disabled={editMode}
+                    />
+                  </>
+                )
+              }
+
             </Col>
           </Row>
           <Row>
@@ -148,8 +209,8 @@ const UsuariosForm: FC<props> = ({
                 placeholder='Rol de usuario'
                 valueContainerName="role"
                 optionsList={[
-                    {value: "admin", label: "Admin"},
-                    {value: "promoter", label: "Promotor"}
+                  { value: "admin", label: "Admin" },
+                  { value: "promoter", label: "Promotor" }
                 ]}
 
               />

@@ -7,8 +7,9 @@ export interface NewPromoterDataI {
     postal_code: string;
     phone: string;
     cell_phone: string;
-    email: string;
+    email?: string;
     rfc: string;
+    user_id?: string;
 }
 
 export interface PromoterDataI extends NewPromoterDataI {
@@ -30,6 +31,7 @@ export interface ModifyPromoterDataI {
     cell_phone?: string;
     rfc?: string;
     balance?: number;
+    user_id?: string;
     type?: 'active' | 'inactive';
 }
 
