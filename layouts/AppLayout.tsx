@@ -28,7 +28,7 @@ const AppLayout: FC<PropsWithChildren<props>> = ({ children }) => {
     )
 
     const logout = async () => {
-        const logout = await axios.get('http://localhost:3000/api/auth/logout')
+        const logout = await axios.get(process.env.FRONT_URL+'/api/auth/logout')
         router.push("/login")
         console.log(logout)
     }
