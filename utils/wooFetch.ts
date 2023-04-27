@@ -14,7 +14,7 @@ export interface WooGetDataI {
 
 const getWooKeys = async () => {
     try {
-        const metadata = await axios.get('http://localhost:3000/api/metadata')
+        const metadata = await axios.get(process.env.FRONT_URL+'/api/metadata')
 
         if (!metadata.data) {
             return {
