@@ -58,4 +58,11 @@ export enum UserRoles {
     success: Boolean
     error?: any
   }
+
+  export interface StatsI {
+    promoters: number;
+    admins: number;
+    commissions: number;
+    movements: number;
+}
   

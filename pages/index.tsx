@@ -1,10 +1,18 @@
-import { Row, Typography } from 'antd';
-import { useEffect, useState } from 'react';
+import { Row, Tag, Typography } from 'antd';
+import { FC, useEffect, useState } from 'react';
 import AdminDashboard from '../components/pages/Dashboard/AdminDashboard';
 import { UserDataI } from '../interfaces/user.interfaces';
 import CardContainer from '../components/containers/CardContainer';
+import { GetServerSideProps } from 'next';
+import axios from 'axios';
+import { StatsI } from '../interfaces/app.interfaces';
+import PromoterDashboard from '../components/pages/Dashboard/PromoterDashboard';
+interface props {
+  stats: StatsI;
+}
 
-export default function Home() {
+
+const Home: FC<props> = ({ stats }) => {
   const [user, setUser] = useState<UserDataI | null>(null)
 
   useEffect(() => {
@@ -15,15 +23,56 @@ export default function Home() {
   return (
     <>
       <CardContainer>
-        <Typography.Title level={2}>Bienvenido {user?.name}</Typography.Title>
+        <Typography.Title style={{
+          display: "flex",
+          justifyContent: "flex-start",
+          alignItems: "center"
+        }}
+          level={2}>
+          Bienvenido {user?.name}
+          <Tag
+            color='volcano'
+            style={{
+              fontSize: "0.8rem",
+              marginTop: "0.2rem",
+              marginLeft: "0.5rem"
+            }}
+          >
+            {user?.email}
+          </Tag>
+        </Typography.Title>
       </CardContainer>
       <Row>
-        
+
       </Row>
       {
-        user?.role && user?.role === 'admin' ? <AdminDashboard /> : <p>Cliente normal</p>
+        user?.role && user?.role === 'admin' 
+          ? <AdminDashboard stats={stats} /> 
+          : <PromoterDashboard />
       }
 
     </>
   )
 }
+
+export const getServerSideProps: GetServerSideProps = async ({ params }) => {
+
+  const stadistics = await axios.get(process.env.FRONT_URL+'/api/stadistics')
+
+  if (!stadistics) {
+    return {
+      redirect: {
+        destination: '/',
+        permanent: false
+      }
+    }
+  }
+
+  return {
+    props: {
+      stats: stadistics.data,
+    }
+  }
+}
+
+export default Home
