@@ -21,6 +21,7 @@ const PromoterView: FC<props> = ({ promoter }) => {
                 <ViewItem label='Dirección' text={promoter?.address} />
                 <ViewItem label='Código postal' text={promoter?.postal_code} />
                 <ViewItem label='Códigos promocionales' tagList={promoter?.promoter_codes} />
+                <ViewItem label='Saldo' tagList={[`$${promoter?.balance} MXN`]} />
                 <ViewItem label='Registro' text={moment(promoter?.created_at).format("DD-MM-YYYY")} />
                 <ViewItem label='Modificado' text={moment(promoter?.updated_at).format("DD-MM-YYYY")} />
             </CardContainer>

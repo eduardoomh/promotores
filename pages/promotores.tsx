@@ -75,8 +75,7 @@ const Promotores: FC<props> = ({ promoters, users }) => {
 
   const refetchingPromotors = async () => {
     try {
-      const response = await axios.get(`http://localhost:3000/api/promoters`);
-      console.log(response.data, "refetchuing")
+      const response = await axios.get(process.env.FRONT_URL+`/api/promoters`);
       refreshPromoters(response.data)
       changePromoter(response.data[0])
 
@@ -188,10 +187,9 @@ const Promotores: FC<props> = ({ promoters, users }) => {
 
 export const getServerSideProps: GetServerSideProps = async ({ params }) => {
 
-  const promoters = await axios.get('http://localhost:3000/api/promoters')
-  const users = await axios.get('http://localhost:3000/api/users/role/promoter')
-  console.log(promoters.data)
-  console.log(users.data)
+  const promoters = await axios.get(process.env.FRONT_URL+'/api/promoters')
+  const users = await axios.get(process.env.FRONT_URL+'/api/users/role/promoter')
+
   if (!promoters) {
     return {
       redirect: {

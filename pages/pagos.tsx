@@ -83,7 +83,7 @@ const Pagos: FC<props> = ({ promoters, movements }) => {
 
   const refetchingMovements = async () => {
     try {
-      const response = await axios.get(`http://localhost:3000/api/commissions`);
+      const response = await axios.get(process.env.FRONT_URL+`/api/commissions`);
       refreshMovements(response.data)
       changeMovement(response.data[0])
 
@@ -163,8 +163,8 @@ const Pagos: FC<props> = ({ promoters, movements }) => {
 
 export const getServerSideProps: GetServerSideProps = async ({ params }) => {
 
-  const promoters = await axios.get('http://localhost:3000/api/promoters')
-  const movements = await axios.get('http://localhost:3000/api/movements')
+  const promoters = await axios.get(process.env.FRONT_URL+'/api/promoters')
+  const movements = await axios.get(process.env.FRONT_URL+'/api/movements')
 
   if (!promoters || !movements) {
     return {
