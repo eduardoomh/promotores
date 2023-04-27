@@ -9,6 +9,7 @@ import { FC, useEffect, useState } from "react"
 import WooCommerceRestApi from "@woocommerce/woocommerce-rest-api"
 import axios from "axios"
 import { wooGetCoupons, WooGetDataI } from "../../../utils/wooFetch"
+import { UserDataI } from "../../../interfaces/user.interfaces"
 
 interface props {
   showModal: (type?: 'CREATE' | 'MODIFY') => void
@@ -18,10 +19,21 @@ interface props {
   refetchingPromotors: () => void
   pushPromoters: (promoter: PromoterDataI) => void
   editMode: boolean
-  promoter: PromoterDataI | undefined
+  promoter: PromoterDataI | undefined;
+  users: UserDataI[];
 }
 
-const PromotoresForm: FC<props> = ({ showModal, changePromoter, editMode, promoter, refetchingPromotors, changeLoadingList, changeEditMode, pushPromoters }) => {
+const PromotoresForm: FC<props> = ({ 
+    showModal, 
+    changePromoter, 
+    editMode, 
+    promoter, 
+    refetchingPromotors, 
+    changeLoadingList, 
+    changeEditMode, 
+    pushPromoters,
+    users
+  }) => {
   const [form] = Form.useForm()
   const { fetchData, isLoading: isLoadingCreate } = usePost(addPromoter)
   const { fetchDataPatch, isLoadingPatch, dataPatch } = usePatch(editPromoter)
@@ -30,7 +42,6 @@ const PromotoresForm: FC<props> = ({ showModal, changePromoter, editMode, promot
   const onFinish = async (data: NewPromoterDataI) => {
     try {
       changeLoadingList(true)
-      console.log("mira la informacion", data)
       const response = await fetchData({
         promoter: {
           promoter_codes: data.promoter_codes,
@@ -40,8 +51,8 @@ const PromotoresForm: FC<props> = ({ showModal, changePromoter, editMode, promot
           postal_code: data.postal_code,
           phone: data.phone,
           cell_phone: data.cell_phone,
-          email: data.email,
           rfc: data.rfc,
+          user_id: data.user_id
         }
       })
       console.log(response)
@@ -79,8 +90,8 @@ const PromotoresForm: FC<props> = ({ showModal, changePromoter, editMode, promot
             postal_code: data.postal_code,
             phone: data.phone,
             cell_phone: data.cell_phone,
-            email: data.email,
             rfc: data.rfc,
+            user_id: data.user_id
           }
         })
       console.log(dataPatch, "data patch", response)
@@ -111,7 +122,7 @@ const PromotoresForm: FC<props> = ({ showModal, changePromoter, editMode, promot
   const getCoupons = async () => {
     try {
 
-      const {response}: WooGetDataI = await wooGetCoupons()
+      const { response }: WooGetDataI = await wooGetCoupons()
       setCoupons(response)
 
     } catch (error) {
@@ -132,15 +143,16 @@ const PromotoresForm: FC<props> = ({ showModal, changePromoter, editMode, promot
         cell_phone: promoter?.cell_phone,
         email: promoter?.email,
         rfc: promoter?.rfc,
+        user_id: promoter?.user_id
       })
     } else {
       form.resetFields()
     }
   }, [editMode])
 
-  useEffect(() =>{
+  useEffect(() => {
     getCoupons()
-  },[])
+  }, [])
 
   return (
     <CardContainer>
@@ -185,12 +197,23 @@ const PromotoresForm: FC<props> = ({ showModal, changePromoter, editMode, promot
           </Row>
           <Row>
             <Col span={24}>
-              <Typography>Correo</Typography>
+              <Typography>Usuario</Typography>
               <InputContainer
-                type="text"
+                type="searchSelect"
                 required
-                placeholder='Correo'
-                valueContainerName="email"
+                canSearch
+                filter={(input: any, option: any) => (option?.label.toLowerCase() ?? '').includes(input)}
+                placeholder='Usuario'
+                valueContainerName="user_id"
+                optionsList={
+                  users && users.map((el: UserDataI) => {
+                    return {
+                      value: el._id,
+                      label: `${el.email}`,
+                    }
+                  })
+                }
+
               />
             </Col>
           </Row>

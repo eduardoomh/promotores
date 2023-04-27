@@ -3,7 +3,6 @@ import mongoose from 'mongoose'
 import type { NextApiRequest, NextApiResponse } from 'next'
 import { db } from '../../../database/connection'
 import Commission from '../../../database/models/Commission'
-import Promotor from '../../../database/models/Promoter'
 import { CommissionDataI } from '../../../interfaces/commission.interfaces'
 
 type Data =
@@ -73,12 +72,6 @@ const updateCommission = async (req: NextApiRequest, res: NextApiResponse) => {
     }
 
 
-    //entryToUpdate.description = description
-    //entryToUpdate.status = status
-    //entryToUpdate.save()
-
-
-
 }
 
 const deleteCommission = async (req: NextApiRequest, res: NextApiResponse) => {
@@ -86,7 +79,6 @@ const deleteCommission = async (req: NextApiRequest, res: NextApiResponse) => {
 
     await db.connect()
     const commissionDelete = await Commission.deleteOne({ _id: id })
-    console.log(commissionDelete)
     await db.disconnect()
 
     if (!commissionDelete) {

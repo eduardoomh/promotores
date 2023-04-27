@@ -9,3 +9,12 @@ export const addMovement =
       data: dto
     })
   }
+
+  export const deleteMovement =
+  (Id: String) => async (backendApiCall: (data: apiProps) => Promise<apiResponse>) => {
+    return await backendApiCall({
+      method: 'DELETE',
+      endpoint: `movements/${Id}`,
+      data: {},
+    })
+  }

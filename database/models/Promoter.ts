@@ -47,6 +47,11 @@ const promoterSchema = new Schema({
     },
     updated_at: {
         type: Number,
+    },
+    user_id: {
+        type: Schema.Types.ObjectId,
+        ref: "User",
+        required: true
     }
 })
 

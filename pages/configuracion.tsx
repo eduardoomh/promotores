@@ -78,7 +78,7 @@ const Configuration: FC<props> = ({ metadataDB }) => {
 }
 
 export const getServerSideProps: GetServerSideProps = async ({ params }) => {
-    const metadata = await axios.get('http://localhost:3000/api/metadata')
+    const metadata = await axios.get(process.env.FRONT_URL+'/api/metadata')
 
     return {
         props: {

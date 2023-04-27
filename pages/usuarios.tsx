@@ -4,29 +4,30 @@ import { GetServerSideProps } from 'next';
 import React, { FC, useContext, useEffect, useState } from 'react';
 import { useDelete } from '../hooks/useDelete';
 import CardContainer from '../components/containers/CardContainer';
-import PromotoresForm from '../components/pages/Promotores/PromotoresForm';
 import { PromoterDataI } from '../interfaces/promoter.interfaces';
 import PromoterEditMode from '../components/pages/Promotores/PromoterEditMode';
 import { deletePromoter } from '../services/promoter_s';
 import ModalPromoter from '../components/pages/Promotores/ModalPromoter';
 import CustomTable from '../components/pages/Table';
 import { GenericContext } from '../context/GenericContext';
+import UsuariosForm from '../components/pages/Usuarios/UsuariosForm';
 import { UserDataI } from '../interfaces/user.interfaces';
+import ModalUser from '../components/pages/Usuarios/ModalUser';
 
 interface props {
-  promoters: PromoterDataI[];
-  users: UserDataI[];
+  promoters: PromoterDataI[]
 }
 
-const Promotores: FC<props> = ({ promoters, users }) => {
+const Usuarios: FC<props> = ({ promoters }) => {
   const [openModal, setOpenModal] = useState<boolean>(false)
-  const [promotersArray, setPromoterArray] = useState<PromoterDataI[] | unknown>(promoters)
-  const [promoter, setPromoter] = useState<PromoterDataI | undefined>(undefined)
+  const [usersArray, setUserArray] = useState<UserDataI[] | unknown>(promoters)
+  const [user, setUser] = useState<UserDataI | undefined>(undefined)
   const [editMode, setEditMode] = useState<boolean>(false)
+  const [editPassword, setEditPassword] = useState<boolean>(false)
   const { fetchDataDelete, isLoadingDelete } = useDelete(deletePromoter)
   const [loadingList, setloadingList] = useState<boolean>(false)
-  const [modalTitle, setModalTitle] = useState<string>('Crear Nuevo Promotor')
-  const { currentPromoter, changeCurrentPromoter } = useContext(GenericContext)
+  const [modalTitle, setModalTitle] = useState<string>('Crear Nuevo Usuario')
+  const { currentUser, changeCurrentUser } = useContext(GenericContext)
 
 
   const closeModal = () => {
@@ -36,20 +37,21 @@ const Promotores: FC<props> = ({ promoters, users }) => {
   const showModal = (type?: 'CREATE' | 'MODIFY') => {
     switch (type) {
       case 'CREATE':
-        setModalTitle('Nuevo promotor')
+        setModalTitle('Nuevo usuario')
         break
       case 'MODIFY':
-        setModalTitle('Promotor Actualizado')
+        setModalTitle('Usuario Actualizado')
         break
       default:
-        setModalTitle('Información del Promotor')
+        setModalTitle('Información del Usuario')
         break
     }
     setOpenModal(true)
   }
 
-  const assignNewPromoter = (promoter: PromoterDataI) =>{
-    changeCurrentPromoter(promoter)
+  const assignNewUser = (user: UserDataI) =>{
+    console.log(user)
+    changeCurrentUser(user)
     showModal()
   }
 
@@ -57,27 +59,32 @@ const Promotores: FC<props> = ({ promoters, users }) => {
     setloadingList(state)
   }
 
-  const changePromoter = (promoter: PromoterDataI) => {
-    setPromoter(promoter)
+  const changeUser = (user: UserDataI) => {
+    setUser(user)
   }
 
   const refreshPromoters = (promoters: PromoterDataI[] | unknown) => {
-    setPromoterArray(promoters)
+    setUserArray(promoters)
   }
 
   const changeEditMode = (state: boolean) => {
     setEditMode(state)
+    setEditPassword(false)
 
     if (state) {
       closeModal()
     }
   }
 
-  const refetchingPromotors = async () => {
+  const changeEditPassword = (state: boolean) => {
+    setEditPassword(state)
+  }
+
+  const refetchingUsers = async () => {
     try {
-      const response = await axios.get(process.env.FRONT_URL+`/api/promoters`);
+      const response = await axios.get(process.env.FRONT_URL+`/api/users`);
       refreshPromoters(response.data)
-      changePromoter(response.data[0])
+      changeUser(response.data[0])
 
     } catch (error) {
       console.log("error", error)
@@ -85,20 +92,20 @@ const Promotores: FC<props> = ({ promoters, users }) => {
   }
 
 
-  const pushPromoters = (promoter: PromoterDataI) => {
-    setPromoterArray([
+  const pushUser = (user: UserDataI) => {
+    setUserArray([
       {
-        ...promoter
+        ...user
       },
-      ...promotersArray as PromoterDataI[],
+      ...usersArray as PromoterDataI[],
     ])
-    changePromoter(promoter)
+    changeUser(user)
   }
 
-  const dropPromoter = async (id: string) => {
+  const dropUser = async (id: string) => {
     try {
       await fetchDataDelete(id)
-      refetchingPromotors()
+      refetchingUsers()
       closeModal()
       message.success('El promotor ha sido eliminado exitosamente.')
 
@@ -110,8 +117,8 @@ const Promotores: FC<props> = ({ promoters, users }) => {
   }
 
   useEffect(() =>{
-    setPromoter(currentPromoter)
-  },[currentPromoter])
+    setUser(currentUser)
+  },[currentUser])
 
 
   return (
@@ -119,7 +126,7 @@ const Promotores: FC<props> = ({ promoters, users }) => {
       <Row>
         <Col span={24}>
           <CardContainer cardStyle={{ marginLeft: '22px' }}>
-            <Typography.Title level={2}>Promotores</Typography.Title>
+            <Typography.Title level={2}>Usuarios</Typography.Title>
           </CardContainer>
         </Col>
       </Row>
@@ -131,16 +138,17 @@ const Promotores: FC<props> = ({ promoters, users }) => {
           borderRadius: '12px',
         }}>
         <Col span={10}>
-          <PromotoresForm
+          <UsuariosForm
             showModal={showModal}
-            changePromoter={changePromoter}
-            refetchingPromotors={refetchingPromotors}
+            changeUser={changeUser}
+            refetchingPromotors={refetchingUsers}
             editMode={editMode}
-            promoter={promoter}
+            user={user}
             changeLoadingList={changeLoadingList}
             changeEditMode={changeEditMode}
-            pushPromoters={pushPromoters}
-            users={users}
+            pushUser={pushUser}
+            editPassword={editPassword}
+            changeEditPassword={changeEditPassword}
 
           />
         </Col>
@@ -158,14 +166,14 @@ const Promotores: FC<props> = ({ promoters, users }) => {
             ) : (
               <>
                 <CardContainer cardStyle={{ marginBottom: '1rem', display: 'flex', justifyContent: 'center' }}>
-                  <Typography.Title level={4} >Promotores Registrados</Typography.Title>
+                  <Typography.Title level={4} >Usuarios Registrados</Typography.Title>
                 </CardContainer>
                 <CustomTable
-                  type='PROMOTERS'
-                  data={promotersArray as any[]}
+                  type='USERS'
+                  data={usersArray as any[]}
                   loading={loadingList}
                   size={10}
-                  assignNewPromoter={assignNewPromoter}
+                  assignNewPromoter={assignNewUser}
                 />
               </>
             )
@@ -173,24 +181,23 @@ const Promotores: FC<props> = ({ promoters, users }) => {
 
         </Col>
       </Row >
-      <ModalPromoter
+      <ModalUser
         modalTitle={modalTitle}
         openModal={openModal}
-        promoter={promoter}
+        user={user}
         isLoadingDelete={isLoadingDelete}
         closeModal={closeModal}
         changeEditMode={changeEditMode}
-        dropPromoter={dropPromoter}
+        dropUser={dropUser}
       />
     </>)
 }
 
 export const getServerSideProps: GetServerSideProps = async ({ params }) => {
 
-  const promoters = await axios.get(process.env.FRONT_URL+'/api/promoters')
-  const users = await axios.get(process.env.FRONT_URL+'/api/users/role/promoter')
+  const users = await axios.get(process.env.FRONT_URL+'/api/users')
 
-  if (!promoters) {
+  if (!users) {
     return {
       redirect: {
         destination: '/',
@@ -201,10 +208,9 @@ export const getServerSideProps: GetServerSideProps = async ({ params }) => {
 
   return {
     props: {
-      promoters: promoters.data,
-      users: users.data
+      promoters: users.data
     }
   }
 }
 
-export default Promotores
+export default Usuarios
