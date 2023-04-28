@@ -29,7 +29,7 @@ const AppLayout: FC<PropsWithChildren<props>> = ({ children }) => {
 
     const logout = async () => {
         console.log(`${process.env.FRONT_URL}/api/auth/logout`)
-        const logout = await axios.get(`${process.env.FRONT_URL}/api/auth/logout`)
+        const logout = await axios.get(`https://promotores.vercel.app/api/auth/logout`)
         router.push("/login")
         console.log(logout)
     }
