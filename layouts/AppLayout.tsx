@@ -17,6 +17,8 @@ import axios from 'axios';
 interface props {
     children: ReactElement
 }
+const FRONT_URL = "https://promotores.vercel.app"
+//const FRONT_URL = "http://localhost:3000"
 const AppLayout: FC<PropsWithChildren<props>> = ({ children }) => {
     const [collapsed, setCollapsed] = useState(false);
     const router = useRouter()
@@ -29,7 +31,7 @@ const AppLayout: FC<PropsWithChildren<props>> = ({ children }) => {
 
     const logout = async () => {
         console.log(`${process.env.FRONT_URL}/api/auth/logout`)
-        const logout = await axios.get(`https://promotores.vercel.app/api/auth/logout`)
+        const logout = await axios.get(`${FRONT_URL}/api/auth/logout`)
         router.push("/login")
         console.log(logout)
     }
