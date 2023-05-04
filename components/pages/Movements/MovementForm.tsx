@@ -36,7 +36,7 @@ const MovementForm: FC<props> = ({ showModal, changeMovement, editMode, movement
         try {
             changeLoadingList(true)
             const response = await fetchData({
-                movement:{
+                movement: {
                     order_number: orders.find(el => el.id === data.order)?.order_number as string,
                     promoter: commissions.find(el => el._id === data.commission)?.promoter._id as string,
                     code: commissions.find(el => el._id === data.commission)?.code as string,
@@ -54,8 +54,9 @@ const MovementForm: FC<props> = ({ showModal, changeMovement, editMode, movement
                 setTimeout(() => {
                     changeLoadingList(false)
                 }, 400)
-
-
+            } else {
+                //@ts-ignore
+                message.error(response.error.message)
             }
 
         } catch (error) {
@@ -72,7 +73,7 @@ const MovementForm: FC<props> = ({ showModal, changeMovement, editMode, movement
             const response = await fetchDataPatch(
                 movement?._id as string,
                 {
-                    commission:{
+                    commission: {
                         promoter: data.promoter,
                         code: data.code,
                         discount: data.discount,
@@ -110,12 +111,12 @@ const MovementForm: FC<props> = ({ showModal, changeMovement, editMode, movement
             const commissions = response.data as CommissionDataI[]
             setCommissions(commissions)
         }
-        
+
     }
 
-    const getOrders = async () =>{
+    const getOrders = async () => {
         const { success, response }: WooGetDataI = await wooGetOrders()
-        if(success){
+        if (success) {
             const orders: StoreOrder[] = response;
             setOrders(orders)
         }
@@ -132,9 +133,9 @@ const MovementForm: FC<props> = ({ showModal, changeMovement, editMode, movement
         }
     }, [editMode])
 
-    useEffect(() =>{
+    useEffect(() => {
 
-    },[orders])
+    }, [orders])
 
     return (
         <CardContainer>
@@ -180,7 +181,7 @@ const MovementForm: FC<props> = ({ showModal, changeMovement, editMode, movement
                                     commissions && commissions.map((el: CommissionDataI) => {
                                         return {
                                             value: el._id,
-                                            label: `${el.code} - Descuento: $${ el.discount} - Comisión: $${el.commission}`,
+                                            label: `${el.code} - Descuento: $${el.discount} - Comisión: $${el.commission}`,
                                         }
                                     })
                                 }
@@ -201,7 +202,7 @@ const MovementForm: FC<props> = ({ showModal, changeMovement, editMode, movement
                                     orders && orders.map((el: StoreOrder) => {
                                         return {
                                             value: el.id,
-                                            label: `#${el.order_number} - ${ el?.product_items[0] && el?.product_items[0]?.name?.split('<span>')[0]}`,
+                                            label: `#${el.order_number} - ${el?.product_items[0] && el?.product_items[0]?.name?.split('<span>')[0]}`,
                                         }
                                     })
                                 }
