@@ -39,6 +39,7 @@ const getMovements = async (res: NextApiResponse<Data>) => {
 
 const postMovements = async (req: NextApiRequest, res: NextApiResponse<Data>) => {
     const { movement } = req.body
+    await db.connect()
     const promoterExist = await PromoterModel.findOne({ _id: movement.promoter })
 
     console.log(movement)
@@ -63,7 +64,6 @@ const postMovements = async (req: NextApiRequest, res: NextApiResponse<Data>) =>
     })
 
     try {
-        await db.connect()
         await newMovement.save()
         const savedMovement = await Movement.findById(newMovement._id).populate('promoter')
         await Promoter.findByIdAndUpdate(
