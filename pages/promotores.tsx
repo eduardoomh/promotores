@@ -17,6 +17,8 @@ interface props {
   promoters: PromoterDataI[];
   users: UserDataI[];
 }
+const FRONT_URL = "https://promotores.vercel.app"
+//const FRONT_URL = "http://localhost:3000"
 
 const Promotores: FC<props> = ({ promoters, users }) => {
   const [openModal, setOpenModal] = useState<boolean>(false)
@@ -75,7 +77,7 @@ const Promotores: FC<props> = ({ promoters, users }) => {
 
   const refetchingPromotors = async () => {
     try {
-      const response = await axios.get(process.env.FRONT_URL+`/api/promoters`);
+      const response = await axios.get(FRONT_URL+`/api/promoters`); 
       refreshPromoters(response.data)
       changePromoter(response.data[0])
 
