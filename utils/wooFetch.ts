@@ -14,7 +14,7 @@ export interface WooGetDataI {
 
 const getWooKeys = async () => {
     try {
-        const metadata = await axios.get(process.env.FRONT_URL+'/api/metadata')
+        const metadata = await axios.get('https://promotores.vercel.app'+'/api/metadata')
 
         if (!metadata.data) {
             return {
