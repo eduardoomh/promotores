@@ -12,9 +12,12 @@ export interface WooGetDataI {
     response: any;
 }
 
+const FRONT_URL = "https://promotores.vercel.app"
+//const FRONT_URL = "http://localhost:3000"
+
 const getWooKeys = async () => {
     try {
-        const metadata = await axios.get('https://promotores.vercel.app'+'/api/metadata')
+        const metadata = await axios.get(FRONT_URL+'/api/metadata')
 
         if (!metadata.data) {
             return {

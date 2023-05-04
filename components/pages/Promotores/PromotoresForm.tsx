@@ -1,4 +1,4 @@
-import { Typography, Divider, Form, Row, Col, message, Spin, Select } from "antd"
+import { Typography, Divider, Form, Row, Col, message, Spin } from "antd"
 import CardContainer from "../../containers/CardContainer"
 import InputContainer from "../../containers/InputContainer"
 import { addPromoter, editPromoter } from '../../../services/promoter_s'
@@ -6,8 +6,6 @@ import { usePost } from "../../../hooks/usePost"
 import { usePatch } from "../../../hooks/usePatch"
 import { NewPromoterDataI, PromoterDataI } from "../../../interfaces/promoter.interfaces"
 import { FC, useEffect, useState } from "react"
-import WooCommerceRestApi from "@woocommerce/woocommerce-rest-api"
-import axios from "axios"
 import { wooGetCoupons, WooGetDataI } from "../../../utils/wooFetch"
 import { UserDataI } from "../../../interfaces/user.interfaces"
 
@@ -64,8 +62,9 @@ const PromotoresForm: FC<props> = ({
         setTimeout(() => {
           changeLoadingList(false)
         }, 1000)
-
-
+      }else{
+        //@ts-ignore
+        message.error(response.error.message)
       }
 
     } catch (error) {

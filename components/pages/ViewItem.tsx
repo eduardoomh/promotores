@@ -16,7 +16,7 @@ const ViewItem: FC<props> = ({ text, label, tagList = undefined }) => {
                 {
                     tagList
                         ? tagList.map(el => (
-                            <Tag style={{marginTop: '8px'}}>{el}</Tag>
+                            <Tag key={el} style={{marginTop: '8px'}}>{el}</Tag>
                         )) : text
                 }
             </Typography>
