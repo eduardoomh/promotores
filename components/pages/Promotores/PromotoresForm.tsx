@@ -120,7 +120,7 @@ const PromotoresForm: FC<props> = ({
 
   const getCoupons = async () => {
     try {
-
+console.log("ger5 cupones")
       const { response }: WooGetDataI = await wooGetCoupons()
       setCoupons(response)
 

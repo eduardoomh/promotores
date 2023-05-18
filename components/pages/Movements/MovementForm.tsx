@@ -67,9 +67,12 @@ const MovementForm: FC<props> = ({ showModal, changeMovement, editMode, movement
     }
 
     const onFinishEdit = async (data: NewCommissionDataI) => {
-        try {
+        try { 
+            /*
             changeLoadingList(true)
             console.log("mira la informacion", data)
+            const response = 
+           
             const response = await fetchDataPatch(
                 movement?._id as string,
                 {
@@ -80,6 +83,7 @@ const MovementForm: FC<props> = ({ showModal, changeMovement, editMode, movement
                         commission: data.commission
                     }
                 })
+               
             console.log(dataPatch, "data patch", response)
 
             if (!response?.error) {
@@ -94,7 +98,7 @@ const MovementForm: FC<props> = ({ showModal, changeMovement, editMode, movement
             }
 
 
-
+ */
 
         } catch (error: any) {
             console.log(error)

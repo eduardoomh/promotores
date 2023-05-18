@@ -11,6 +11,14 @@ const commissionSchema = new Schema({
         type: String,
         required: true
     },
+    coupon: {
+        type: String,
+        required: true
+    },
+    discount_type: {
+        type: String,
+        required: true
+    },
     discount: {
         type: Number,
         required: true

@@ -18,6 +18,8 @@ const ComissionView: FC<props> = ({ comission }) => {
                 <ViewItem label='Código' text={``} tagList={[`${comission?.code}`]} />
                 <ViewItem label='Comisión' text={`${comission?.commission}`} />
                 <ViewItem label='Descuento' text={`${comission?.discount}`} />
+                <ViewItem label='Tipo de descuento' text={`${comission?.discount_type}`} />
+                <ViewItem label='Id del cupón' text={`${comission?.coupon}`} />
                 <ViewItem label='Registro' text={moment(comission?.created_at).format("DD-MM-YYYY")} />
                 <ViewItem label='Modificado' text={moment(comission?.updated_at).format("DD-MM-YYYY")} />
             </CardContainer>

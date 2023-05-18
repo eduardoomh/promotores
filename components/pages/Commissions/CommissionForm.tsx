@@ -1,4 +1,4 @@
-import { Typography, Divider, Form, Row, Col, message, Spin, Select } from "antd"
+import { Typography, Divider, Form, Row, Col, message, Spin, Button } from "antd"
 import CardContainer from "../../containers/CardContainer"
 import InputContainer from "../../containers/InputContainer"
 import { addCommission, editCommission } from '../../../services/commission_s'
@@ -7,6 +7,8 @@ import { usePatch } from "../../../hooks/usePatch"
 import { PromoterDataI } from "../../../interfaces/promoter.interfaces"
 import { FC, useEffect, useState } from "react"
 import { CommissionDataI, NewCommissionDataI } from "../../../interfaces/commission.interfaces"
+import { wooGetSpecificCoupons } from "../../../utils/wooFetch"
+import CouponView from "./CouponView";
 
 interface props {
     showModal: (type?: 'CREATE' | 'MODIFY') => void
@@ -19,35 +21,60 @@ interface props {
     promoters: PromoterDataI[]
 }
 
-const CommissionForm: FC<props> = ({ 
-    showModal, 
-    changeCommission, 
-    editMode, 
-    commission, 
-    changeLoadingList, 
-    changeEditMode, 
-    pushCommission, 
-    promoters 
+const CommissionForm: FC<props> = ({
+    showModal,
+    changeCommission,
+    editMode,
+    commission,
+    changeLoadingList,
+    changeEditMode,
+    pushCommission,
+    promoters
 }) => {
     const [form] = Form.useForm()
     const { fetchData, isLoading: isLoadingCreate } = usePost(addCommission)
     const { fetchDataPatch, isLoadingPatch, dataPatch } = usePatch(editCommission)
     const [coupons, setCoupons] = useState<string[]>([])
+    const [selectedCoupon, setSelectedCoupon] = useState(null)
+    const [couponModal, setCouponModal] = useState<boolean>(false)
+    const [couponsWithProducts, setCouponswithProducts] = useState<any[] | null>(null)
+    const [selectedDiscount, setSelectedDiscount] = useState<any | null>(null)
+
+    const openCouponModal = () => {
+        setCouponModal(!couponModal)
+    }
+
+    const couponsByCode = async (code: string) => {
+        try {
+            const result = await wooGetSpecificCoupons(code)
+            setCouponswithProducts(result.response)
+        } catch (error) {
+            console.log(error)
+        }
+    }
 
     const onFinish = async (data: NewCommissionDataI) => {
         console.log(data)
         try {
             changeLoadingList(true)
             const response = await fetchData({
-                commission:{
+                commission: {
                     promoter: data.promoter,
                     code: data.code,
+                    coupon: couponsWithProducts?.find(el => el.id === selectedDiscount).id,
+                    discount_type: 
+                    couponsWithProducts?.find(el => el.id === selectedDiscount).discount_type === 'percent' 
+                    ? 'Porcentaje'
+                    : 'Cantidad',
                     discount: data.discount,
                     commission: data.commission
                 }
             })
             if (!response.error) {
                 form.resetFields()
+                setCouponswithProducts(null)
+                setSelectedCoupon(null)
+                setSelectedDiscount(null)
                 message.success('La comisión ha sido guardado exitosamente.')
                 pushCommission(response.data as CommissionDataI)
                 showModal('CREATE')
@@ -72,10 +99,15 @@ const CommissionForm: FC<props> = ({
             const response = await fetchDataPatch(
                 commission?._id as string,
                 {
-                    commission:{
+                    commission: {
                         promoter: data.promoter,
                         code: data.code,
+                        coupon: couponsWithProducts?.find(el => el.id === selectedDiscount).id,
                         discount: data.discount,
+                        discount_type: 
+                            couponsWithProducts?.find(el => el.id === selectedDiscount).discount_type === 'percent' 
+                            ? 'Porcentaje'
+                            : 'Cantidad',
                         commission: data.commission
                     }
                 })
@@ -119,6 +151,14 @@ const CommissionForm: FC<props> = ({
         }
     }, [editMode])
 
+    useEffect(() => {
+        if (selectedDiscount !== null) {
+            form.setFieldsValue({
+                discount: Number(couponsWithProducts?.find(el => el.id === selectedDiscount).amount),
+            })
+        }
+    }, [selectedDiscount])
+
     return (
         <CardContainer>
             <Typography.Title level={4}>
@@ -146,7 +186,6 @@ const CommissionForm: FC<props> = ({
                                         }
                                     })
                                 }
-
                             />
                         </Col>
                     </Row>
@@ -159,8 +198,54 @@ const CommissionForm: FC<props> = ({
                                 placeholder='Códigos de promotor'
                                 valueContainerName="code"
                                 optionsList={coupons}
+                                onChange={(e) => {
+                                    setSelectedCoupon(e)
+                                    console.log(e)
+                                }}
 
                             />
+                        </Col>
+                        <Col span={24}>
+                            {
+                                selectedCoupon && (
+                                    <>
+                                     <Typography>Seleccionar cupón</Typography>
+                                        <Button
+                                            style={{
+                                                marginBottom: "2rem",
+                                                marginTop: "0.5rem"
+                                            }}
+                                            onClick={() => {
+                                                setCouponModal(true)
+                                                couponsByCode(selectedCoupon)
+                                            }}
+                                            disabled={selectedDiscount ? true : false}
+                                        >
+                                            {!selectedDiscount ? 'Seleccionar cupón' : 'Seleccionado'}
+                                        </Button>
+                                        {
+                                            selectedDiscount && (
+                                                <>
+                                                    <Button
+                                                        style={{
+                                                            marginBottom: "2rem",
+                                                            marginTop: "0.5rem",
+                                                            marginLeft: '1rem'
+                                                        }}
+                                                        onClick={() => {
+                                                            openCouponModal()
+                                                        }}
+                                                    >
+                                                        volver a seleccionar
+                                                    </Button>
+                                                </>
+                                            )
+                                        }
+
+                                    </>
+                                )
+                            }
+
                         </Col>
                     </Row>
                     <Row gutter={[10, 5]}>
@@ -171,6 +256,7 @@ const CommissionForm: FC<props> = ({
                                 required
                                 placeholder='Descuento'
                                 valueContainerName="discount"
+                                disabled={selectedDiscount ? true : false}
                             />
                         </Col>
                         <Col span={12}>
@@ -192,6 +278,13 @@ const CommissionForm: FC<props> = ({
                         </Col>
                     </Row>
                 </Spin>
+                <CouponView
+                    couponModal={couponModal}
+                    selectedCoupon={selectedCoupon}
+                    couponsWithProducts={couponsWithProducts}
+                    openCouponModal={openCouponModal}
+                    setSelectedDiscount={setSelectedDiscount}
+                />
             </Form>
         </CardContainer>
     )
