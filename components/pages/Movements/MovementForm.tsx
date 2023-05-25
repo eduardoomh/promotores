@@ -32,7 +32,6 @@ const MovementForm: FC<props> = ({ showModal, changeMovement, editMode, movement
     const [orders, setOrders] = useState<StoreOrder[]>([])
 
     const onFinish = async (data: any) => {
-        console.log(data)
         try {
             changeLoadingList(true)
             const response = await fetchData({
@@ -48,7 +47,6 @@ const MovementForm: FC<props> = ({ showModal, changeMovement, editMode, movement
             if (!response.error) {
                 form.resetFields()
                 message.success('El movimiento ha sido guardado exitosamente.')
-                console.log(response.data, "esta dataaa")
                 pushMovement(response.data as MovementDataI)
                 showModal('CREATE')
                 setTimeout(() => {

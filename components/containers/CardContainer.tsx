@@ -129,15 +129,15 @@ const CardContainer: React.FC<PropsWithChildren<CardContainerProps>> = (CardCont
       >
         {CardContainerProps.itemsOrder ? (
           <>
-            {CardContainerProps.itemsOrder.map((item) => {
+            {CardContainerProps.itemsOrder.map((item, index) => {
               return (
                 <Col
+                  key={index}
                   span={
                     CardContainerProps.direction === 'horizontal'
                       ? CardContainerProps.itemsOrder && 24 / CardContainerProps.itemsOrder?.length
                       : 24
                   }
-                  key={item}
                   style={ItemsStyling[item]}
                 >
                   {CardContainerProps[item]}

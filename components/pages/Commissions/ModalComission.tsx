@@ -16,6 +16,7 @@ interface props{
     isLoadingDelete: boolean;
     closeModal: () => void;
     dropComission: (id: string) => void;
+    changeEditMode: (state: boolean) => void;
     
 }
 const ModalComission: FC<props> = ({
@@ -25,6 +26,7 @@ const ModalComission: FC<props> = ({
     isLoadingDelete, 
     comission, 
     dropComission, 
+    changeEditMode
 }) =>{
     return(
         <ModalContainer
@@ -54,6 +56,15 @@ const ModalComission: FC<props> = ({
                 Eliminar
               </Button>
             </Popconfirm>
+            <Button
+              onClick={() => changeEditMode(true)}
+              style={{ display: 'flex', alignItems: 'center' }}
+              icon={<EditOutlined />}
+              type="primary"
+              ghost
+            >
+              Modificar
+            </Button>
             <Button
               onClick={closeModal}
             >

@@ -19,7 +19,6 @@ export default async function handler(
         case 'GET':
             return getCommissions(res)
         case 'POST':
-            console.log("entra al promoter post")
             return postCommission(req, res)
         default:
             return res.status(400).json({ message: 'Endpoint no existe' })
@@ -53,7 +52,6 @@ const postCommission = async (req: NextApiRequest, res: NextApiResponse<Data>) =
 
     }catch(error){
         await db.disconnect()
-        console.log(error)
         return res.status(500).json({message: "Algo salió mal, revisar consola del servidor"})
     }
     

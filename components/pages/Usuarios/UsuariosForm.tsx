@@ -51,6 +51,7 @@ const UsuariosForm: FC<props> = ({
       if (!response.error) {
         form.resetFields()
         message.success('El usuario ha sido guardado exitosamente.')
+        console.log(response.data, "ddd")
         pushUser(response.data as UserDataI)
         showModal('CREATE')
         setTimeout(() => {
@@ -81,10 +82,10 @@ const UsuariosForm: FC<props> = ({
            ...data,
           }
         })
-      console.log(response, "respuestsss")
 
+      //@ts-ignore
       if (!response?.error) {
-        changeUser(dataPatch as UserDataI)
+        changeUser(response?.data as UserDataI)
         message.success('El usuario ha sido actualizado exitosamente.')
         showModal('MODIFY')
         changeEditMode(false)

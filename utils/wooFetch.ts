@@ -1,6 +1,7 @@
 import WooCommerceRestApi from "@woocommerce/woocommerce-rest-api"
 import axios from "axios"
 import { formattedWooOrders } from "./orderHelpers";
+import { FRONT_URL } from "./crudActions.ts/global";
 
 type GetWooKeysI = {
     success: boolean;
@@ -11,9 +12,6 @@ export interface WooGetDataI {
     success: boolean;
     response: any;
 }
-
-//const FRONT_URL = "https://promotores.vercel.app"
-const FRONT_URL = "http://localhost:3000"
 
 const getWooKeys = async () => {
     try {
@@ -155,16 +153,36 @@ export const wooGetSpecificCoupons = async (name: string) => {
             };
 
             const { data } = await WooApi.get(`products`, productParams)
-            console.log(data, "los prkductos")
+            let filterProducts
 
             for(let coupon of coupons){
-                let filterProducts = data.filter((el: any) => coupon.product_ids.includes(el.id))
+                filterProducts = data.filter((el: any) => coupon.product_ids.includes(el.id))
                 coupon.chamosa_products = filterProducts
-                finalCoupons.push(coupon)
+                const couponDetails = {
+                    id: coupon.id,
+                    code: coupon.code,
+                    amount: coupon.amount,
+                    discount_type: coupon.discount_type,
+                    description: coupon.description !== '' ? coupon.description : 'Sin descripción',
+                    created_at: coupon.date_created,
+                    updated_at: coupon.date_modified,
+                    product_ids: coupon.product_ids,
+                    status: coupon.status,
+                    products: filterProducts.map((product: any) => {
+                        return{
+                            id: product.id,
+                            name: product.name,
+                            price: product.price,
+                            image: product?.images[0]?.src,
+                            image_name: product.images[0]?.name,
+                            description: product.short_description.split('<p>')[1]
+                        }
+                    })
+                }
+                finalCoupons.push(couponDetails)
             }
+  
         }
-
-        console.log(finalCoupons, "results")
 
         return {
             success: true,

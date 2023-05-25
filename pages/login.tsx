@@ -15,7 +15,6 @@ function Home() {
   const { saveLoggedUser } = useContext(GenericContext)
   const [form] = Form.useForm()
   const router = useRouter();
-  console.log(router.pathname)
 
   const onFinish = async (data: LoginUserI) => {
     try {

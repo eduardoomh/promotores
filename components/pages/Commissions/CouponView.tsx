@@ -1,4 +1,4 @@
-import { Button, Checkbox, Col, Collapse, Popconfirm, Row, Spin, Tag, Typography } from "antd"
+import { Button,Col, Collapse, Row, Spin, Tag, Typography } from "antd"
 import ModalContainer, { modalHeight, modalSizes } from "../../containers/ModalContainer"
 import CardContainer from "../../containers/CardContainer"
 import moment from "moment"
@@ -6,16 +6,14 @@ import { FC, useEffect, useState } from "react";
 import ViewItem from "../ViewItem";
 const { Panel } = Collapse;
 import {
-    EditOutlined,
-    DeleteOutlined,
-    QuestionCircleOutlined,
     CheckCircleOutlined
 } from '@ant-design/icons'
+import { CouponDetailsI } from "../../../interfaces/commission.interfaces";
 
 interface props {
     couponModal: boolean;
     selectedCoupon: string | null;
-    couponsWithProducts: any[] | null;
+    couponsWithProducts: CouponDetailsI[] | null;
     openCouponModal: () => void;
     setSelectedDiscount: any;
 }
@@ -26,6 +24,8 @@ const CouponView: FC<props> = ({ couponModal, couponsWithProducts, openCouponMod
     useEffect(() => {
         if (couponsWithProducts !== null) {
             setLoadingView(false)
+        }else{
+            setLoadingView(true)
         }
     }, [couponsWithProducts])
 
@@ -71,20 +71,20 @@ const CouponView: FC<props> = ({ couponModal, couponsWithProducts, openCouponMod
                                                         }`
                                                     }
                                                 />
-                                                <ViewItem label='Fecha de creación' text={moment(coupon.date_created).format("DD-MM-YYYY")} />
+                                                <ViewItem label='Fecha de creación' text={moment(coupon.created_at).format("DD-MM-YYYY")} />
                                                 <Row gutter={[20, 20]} >
                                                     <Col span={24}>
                                                         <strong style={{ fontSize: '1rem' }}>Productos seleccionados</strong>
                                                     </Col>
                                                     {
-                                                        coupon.chamosa_products.map((product: any) => (
+                                                        coupon.products.map((product: any) => (
                                                             <Col sm={24} md={12} xl={8} xxl={8}>
                                                                 <CardContainer
                                                                     title={product.name}
                                                                     iconOrImg={
                                                                         <img
                                                                             width={'100%'}
-                                                                            src={product.images[0].src}
+                                                                            src={product.image}
                                                                         />
                                                                     }
                                                                     iconOrImgStyle={{

@@ -1,4 +1,4 @@
-import { Col, Row, Typography, message } from 'antd';
+import { Col, Row, Typography } from 'antd';
 import axios from 'axios';
 import { GetServerSideProps } from 'next';
 import React, { FC, useContext, useEffect, useState } from 'react';
@@ -12,13 +12,13 @@ import ModalPromoter from '../components/pages/Promotores/ModalPromoter';
 import CustomTable from '../components/pages/Table';
 import { GenericContext } from '../context/GenericContext';
 import { UserDataI } from '../interfaces/user.interfaces';
+import { deleteFromDB } from '../utils/crudActions.ts/deleteFromDB';
+import { refetchingData } from '../utils/crudActions.ts/refetching';
 
 interface props {
   promoters: PromoterDataI[];
   users: UserDataI[];
 }
-const FRONT_URL = "https://promotores.vercel.app"
-//const FRONT_URL = "http://localhost:3000"
 
 const Promotores: FC<props> = ({ promoters, users }) => {
   const [openModal, setOpenModal] = useState<boolean>(false)
@@ -75,18 +75,6 @@ const Promotores: FC<props> = ({ promoters, users }) => {
     }
   }
 
-  const refetchingPromotors = async () => {
-    try {
-      const response = await axios.get(FRONT_URL+`/api/promoters`); 
-      refreshPromoters(response.data)
-      changePromoter(response.data[0])
-
-    } catch (error) {
-      console.log("error", error)
-    }
-  }
-
-
   const pushPromoters = (promoter: PromoterDataI) => {
     setPromoterArray([
       {
@@ -97,18 +85,22 @@ const Promotores: FC<props> = ({ promoters, users }) => {
     changePromoter(promoter)
   }
 
+  const refetchingPromotors = async () => {
+    await refetchingData(
+      '/api/promoters',
+      refreshPromoters,
+      changePromoter
+    )
+  }
+
   const dropPromoter = async (id: string) => {
-    try {
-      await fetchDataDelete(id)
-      refetchingPromotors()
-      closeModal()
-      message.success('El promotor ha sido eliminado exitosamente.')
-
-    } catch (error) {
-      console.log(error)
-      message.error('Ha habido un error, intente mas tarde.')
-    }
-
+    await deleteFromDB(
+      id,
+      'El promotor ha sido eliminado exitosamente.',
+      fetchDataDelete,
+      refetchingPromotors,
+      closeModal
+    )
   }
 
   useEffect(() =>{

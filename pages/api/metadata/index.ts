@@ -19,7 +19,6 @@ export default async function handler(
         case 'GET':
             return getMetadata(res)
         case 'POST':
-            console.log("entra al metadata post")
             return postMetadata(req, res)
         default:
             return res.status(400).json({ message: 'Endpoint no existe' })

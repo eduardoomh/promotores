@@ -77,7 +77,6 @@ const PromotoresForm: FC<props> = ({
   const onFinishEdit = async (data: NewPromoterDataI) => {
     try {
       changeLoadingList(true)
-      console.log("mira la informacion", data)
       const response = await fetchDataPatch(
         promoter?._id as string,
         {
@@ -93,10 +92,9 @@ const PromotoresForm: FC<props> = ({
             user_id: data.user_id
           }
         })
-      console.log(dataPatch, "data patch", response)
 
       if (!response?.error) {
-        changePromoter(dataPatch as PromoterDataI)
+        changePromoter(response?.data as PromoterDataI)
         message.success('El promotor ha sido actualizado exitosamente.')
         showModal('MODIFY')
         changeEditMode(false)
@@ -120,7 +118,6 @@ const PromotoresForm: FC<props> = ({
 
   const getCoupons = async () => {
     try {
-console.log("ger5 cupones")
       const { response }: WooGetDataI = await wooGetCoupons()
       setCoupons(response)
 

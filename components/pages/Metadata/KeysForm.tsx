@@ -16,11 +16,10 @@ interface props {
 const KeysForm: FC<props> = ({ showModal, changeMetadata, metadata }) => {
     const [form] = Form.useForm()
     const { fetchData, isLoading: isLoadingCreate, data: createData } = usePost(addMetadata)
-    const { fetchDataPatch, isLoadingPatch, dataPatch } = usePatch(editMetadata)
+    const { fetchDataPatch, dataPatch } = usePatch(editMetadata)
 
     const onFinish = async (data: StoreKeys) => {
         try {
-            console.log("mira la informacion", data)
             const response = await fetchData({
                 store_keys: {
                     client_id: data.client_id,
@@ -29,7 +28,6 @@ const KeysForm: FC<props> = ({ showModal, changeMetadata, metadata }) => {
                 }
 
             })
-            console.log(response, "hay response", createData)
             if (!response.error) {
                 changeMetadata(response.data as MetadataDataI)
                 message.success('Las claves han sido guardado exitosamente.')
@@ -45,7 +43,6 @@ const KeysForm: FC<props> = ({ showModal, changeMetadata, metadata }) => {
 
     const onFinishEdit = async (data: StoreKeys) => {
         try {
-            console.log("mira la informacion", data)
             const response = await fetchDataPatch(
                 metadata?._id as string,
                 {

@@ -71,10 +71,10 @@ const updateUser = async (req: NextApiRequest, res: NextApiResponse) => {
             }
         }
         const updatedPromotor = await User.findByIdAndUpdate(
-            id, { 
-                ...userData,
-                updated_at: Date.now()
-            }, 
+            id, {
+            ...userData,
+            updated_at: Date.now()
+        },
             { runValidators: true, new: true }
         )
         db.disconnect()
@@ -85,27 +85,30 @@ const updateUser = async (req: NextApiRequest, res: NextApiResponse) => {
         res.status(400).json({ message: error.errors.status.message })
     }
 
-
-    //entryToUpdate.description = description
-    //entryToUpdate.status = status
-    //entryToUpdate.save()
-
-
-
 }
 
 const deleteUser = async (req: NextApiRequest, res: NextApiResponse) => {
     const { id } = req.query
-
-    await db.connect()
-    const promoterDelete = await User.deleteOne({ _id: id })
-    console.log(promoterDelete)
-    await db.disconnect()
-
-    if (!promoterDelete) {
-        return res.status(400).json({ message: 'No existe entrada con ese Id' })
+    try {
+        await db.connect()
+        const userDelete = await User.deleteOne({ _id: id })
+        await db.disconnect()
+        if (!userDelete.deletedCount) {
+            return res.status(400).json({ 
+                success: false,
+                message: 'El usuario no existe' 
+            })
+        }
+        res.status(200).send({
+            success: true,
+            message: 'Usuario eliminado correctamente' 
+        })
+    } catch (error) {
+        console.log(error)
+        return res.status(400).json({ 
+            success: false,
+            message: 'Ha ocurrido un error inesperado' 
+        })
     }
-
-    res.status(200).send(promoterDelete)
 
 }
