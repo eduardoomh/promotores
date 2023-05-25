@@ -95,15 +95,27 @@ const updatePromoter = async (req: NextApiRequest, res: NextApiResponse) => {
 
 const deletePromoter = async (req: NextApiRequest, res: NextApiResponse) => {
     const { id } = req.query
-
-    await db.connect()
-    const promoterDelete = await Promotor.deleteOne({ _id: id })
-    await db.disconnect()
-
-    if (!promoterDelete) {
-        return res.status(400).json({ message: 'No existe entrada con ese Id' })
+    try {
+        await db.connect()
+        const promoterDelete = await Promotor.deleteOne({ _id: id })
+        await db.disconnect()
+        if (!promoterDelete.deletedCount) {
+            return res.status(400).json({ 
+                success: false,
+                message: 'El promotor no existe' 
+            })
+        }
+        res.status(200).send({
+            success: true,
+            message: 'Promotor eliminado correctamente' 
+        })
+    } catch (error) {
+        console.log(error)
+        return res.status(400).json({ 
+            success: false,
+            message: 'Ha ocurrido un error inesperado' 
+        })
     }
 
-    res.status(200).send(promoterDelete)
-
 }
+

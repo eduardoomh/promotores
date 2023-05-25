@@ -19,9 +19,9 @@ export const useDelete = <U>(
 
         setIsLoadingDelete(true)
         const data = await fn(Id)(backendApiCall)
-
         setDataDelete(data.data.data)
         setIsLoadingDelete(false)
+        return data
     }
 
     return {

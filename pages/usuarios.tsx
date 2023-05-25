@@ -1,4 +1,4 @@
-import { Col, Row, Typography, message } from 'antd';
+import { Col, Row, Typography } from 'antd';
 import axios from 'axios';
 import { GetServerSideProps } from 'next';
 import React, { FC, useContext, useEffect, useState } from 'react';
@@ -6,13 +6,14 @@ import { useDelete } from '../hooks/useDelete';
 import CardContainer from '../components/containers/CardContainer';
 import { PromoterDataI } from '../interfaces/promoter.interfaces';
 import PromoterEditMode from '../components/pages/Promotores/PromoterEditMode';
-import { deletePromoter } from '../services/promoter_s';
-import ModalPromoter from '../components/pages/Promotores/ModalPromoter';
 import CustomTable from '../components/pages/Table';
 import { GenericContext } from '../context/GenericContext';
 import UsuariosForm from '../components/pages/Usuarios/UsuariosForm';
 import { UserDataI } from '../interfaces/user.interfaces';
 import ModalUser from '../components/pages/Usuarios/ModalUser';
+import { deleteUser } from '../services/user_s';
+import { deleteFromDB } from '../utils/crudActions.ts/deleteFromDB';
+import { refetchingData } from '../utils/crudActions.ts/refetching';
 
 interface props {
   promoters: PromoterDataI[]
@@ -24,7 +25,7 @@ const Usuarios: FC<props> = ({ promoters }) => {
   const [user, setUser] = useState<UserDataI | undefined>(undefined)
   const [editMode, setEditMode] = useState<boolean>(false)
   const [editPassword, setEditPassword] = useState<boolean>(false)
-  const { fetchDataDelete, isLoadingDelete } = useDelete(deletePromoter)
+  const { fetchDataDelete, isLoadingDelete } = useDelete(deleteUser)
   const [loadingList, setloadingList] = useState<boolean>(false)
   const [modalTitle, setModalTitle] = useState<string>('Crear Nuevo Usuario')
   const { currentUser, changeCurrentUser } = useContext(GenericContext)
@@ -49,8 +50,7 @@ const Usuarios: FC<props> = ({ promoters }) => {
     setOpenModal(true)
   }
 
-  const assignNewUser = (user: UserDataI) =>{
-    console.log(user)
+  const assignNewUser = (user: UserDataI) => {
     changeCurrentUser(user)
     showModal()
   }
@@ -63,8 +63,8 @@ const Usuarios: FC<props> = ({ promoters }) => {
     setUser(user)
   }
 
-  const refreshPromoters = (promoters: PromoterDataI[] | unknown) => {
-    setUserArray(promoters)
+  const refreshUsers = (users: PromoterDataI[] | unknown) => {
+    setUserArray(users)
   }
 
   const changeEditMode = (state: boolean) => {
@@ -80,18 +80,6 @@ const Usuarios: FC<props> = ({ promoters }) => {
     setEditPassword(state)
   }
 
-  const refetchingUsers = async () => {
-    try {
-      const response = await axios.get(process.env.FRONT_URL+`/api/users`);
-      refreshPromoters(response.data)
-      changeUser(response.data[0])
-
-    } catch (error) {
-      console.log("error", error)
-    }
-  }
-
-
   const pushUser = (user: UserDataI) => {
     setUserArray([
       {
@@ -102,23 +90,27 @@ const Usuarios: FC<props> = ({ promoters }) => {
     changeUser(user)
   }
 
-  const dropUser = async (id: string) => {
-    try {
-      await fetchDataDelete(id)
-      refetchingUsers()
-      closeModal()
-      message.success('El promotor ha sido eliminado exitosamente.')
-
-    } catch (error) {
-      console.log(error)
-      message.error('Ha habido un error, intente mas tarde.')
-    }
-
+  const refetchingUsers = async () => {
+    await refetchingData(
+      '/api/users',
+      refreshUsers,
+      changeUser
+    )
   }
 
-  useEffect(() =>{
+  const dropUser = async (id: string) => {
+    await deleteFromDB(
+      id,
+      'Usuario eliminado exitosamente',
+      fetchDataDelete,
+      refetchingUsers,
+      closeModal
+    )
+  }
+
+  useEffect(() => {
     setUser(currentUser)
-  },[currentUser])
+  }, [currentUser])
 
 
   return (
@@ -195,7 +187,7 @@ const Usuarios: FC<props> = ({ promoters }) => {
 
 export const getServerSideProps: GetServerSideProps = async ({ params }) => {
 
-  const users = await axios.get(process.env.FRONT_URL+'/api/users')
+  const users = await axios.get(process.env.FRONT_URL + '/api/users')
 
   if (!users) {
     return {

@@ -32,7 +32,6 @@ const MovementForm: FC<props> = ({ showModal, changeMovement, editMode, movement
     const [orders, setOrders] = useState<StoreOrder[]>([])
 
     const onFinish = async (data: any) => {
-        console.log(data)
         try {
             changeLoadingList(true)
             const response = await fetchData({
@@ -48,7 +47,6 @@ const MovementForm: FC<props> = ({ showModal, changeMovement, editMode, movement
             if (!response.error) {
                 form.resetFields()
                 message.success('El movimiento ha sido guardado exitosamente.')
-                console.log(response.data, "esta dataaa")
                 pushMovement(response.data as MovementDataI)
                 showModal('CREATE')
                 setTimeout(() => {
@@ -67,9 +65,12 @@ const MovementForm: FC<props> = ({ showModal, changeMovement, editMode, movement
     }
 
     const onFinishEdit = async (data: NewCommissionDataI) => {
-        try {
+        try { 
+            /*
             changeLoadingList(true)
             console.log("mira la informacion", data)
+            const response = 
+           
             const response = await fetchDataPatch(
                 movement?._id as string,
                 {
@@ -80,6 +81,7 @@ const MovementForm: FC<props> = ({ showModal, changeMovement, editMode, movement
                         commission: data.commission
                     }
                 })
+               
             console.log(dataPatch, "data patch", response)
 
             if (!response?.error) {
@@ -94,7 +96,7 @@ const MovementForm: FC<props> = ({ showModal, changeMovement, editMode, movement
             }
 
 
-
+ */
 
         } catch (error: any) {
             console.log(error)

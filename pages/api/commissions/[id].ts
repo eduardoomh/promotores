@@ -62,7 +62,8 @@ const updateCommission = async (req: NextApiRequest, res: NextApiResponse) => {
     const { commission } = req.body
 
     try {
-        const updatedCommission = await Commission.findByIdAndUpdate(id, { ...commission }, { runValidators: true, new: true })
+        const updatedCommission = await Commission.findByIdAndUpdate(id, 
+            { ...commission }, { runValidators: true, new: true }).populate('promoter')
         db.disconnect()
         res.status(200).json(updatedCommission)
 
@@ -76,15 +77,26 @@ const updateCommission = async (req: NextApiRequest, res: NextApiResponse) => {
 
 const deleteCommission = async (req: NextApiRequest, res: NextApiResponse) => {
     const { id } = req.query
-
-    await db.connect()
-    const commissionDelete = await Commission.deleteOne({ _id: id })
-    await db.disconnect()
-
-    if (!commissionDelete) {
-        return res.status(400).json({ message: 'No existe entrada con ese Id' })
+    try {
+        await db.connect()
+        const commissionDelete = await Commission.deleteOne({ _id: id })
+        await db.disconnect()
+        if (!commissionDelete.deletedCount) {
+            return res.status(400).json({ 
+                success: false,
+                message: 'La comisión no existe' 
+            })
+        }
+        res.status(200).send({
+            success: true,
+            message: 'Comisión eliminada correctamente' 
+        })
+    } catch (error) {
+        console.log(error)
+        return res.status(400).json({ 
+            success: false,
+            message: 'Ha ocurrido un error inesperado' 
+        })
     }
-
-    res.status(200).send(commissionDelete)
 
 }

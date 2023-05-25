@@ -20,7 +20,7 @@ export enum modalSizes {
 
 export enum modalHeight {
   EXTRABIG = '80%',
-  BIG = '500px',
+  BIG = '650px',
   LARGE = '400px',
   MEDIUM = '300px',
   SHORT = '200px',

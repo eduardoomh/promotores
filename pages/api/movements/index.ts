@@ -21,7 +21,6 @@ export default async function handler(
         case 'GET':
             return getMovements(res)
         case 'POST':
-            console.log("entra al promoter post")
             return postMovements(req, res)
         default:
             return res.status(400).json({ message: 'Endpoint no existe' })
@@ -42,7 +41,6 @@ const postMovements = async (req: NextApiRequest, res: NextApiResponse<Data>) =>
     await db.connect()
     const promoterExist = await PromoterModel.findOne({ _id: movement.promoter })
 
-    console.log(movement)
     if (!promoterExist) {
         return res.status(500).json({ message: "Algo salió mal, usuario no existe" })
     }

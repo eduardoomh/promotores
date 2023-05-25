@@ -59,7 +59,6 @@ const updateMetadata = async (req: NextApiRequest, res: NextApiResponse) => {
     }
 
     const { store_keys } = req.body
-    console.log({ store_keys }, "el req.body")
 
     try {
         const updatedMeta = await Metadata.findByIdAndUpdate(id, { store_keys }, { runValidators: true, new: true })
@@ -85,7 +84,6 @@ const deletePromoter = async (req: NextApiRequest, res: NextApiResponse) => {
 
     await db.connect()
     const promoterDelete = await Promotor.deleteOne({_id: id})
-    console.log(promoterDelete)
     await db.disconnect()
 
     if (!promoterDelete) {

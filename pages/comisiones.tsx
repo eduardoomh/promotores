@@ -1,4 +1,4 @@
-import { Col, Row, Typography, message } from 'antd';
+import { Col, Row, Typography } from 'antd';
 import axios from 'axios';
 import { GetServerSideProps } from 'next';
 import { FC, useContext, useEffect, useState } from 'react';
@@ -11,6 +11,9 @@ import { GenericContext } from '../context/GenericContext';
 import ModalComission from '../components/pages/Commissions/ModalComission';
 import { useDelete } from '../hooks/useDelete';
 import { deleteCommission } from '../services/commission_s';
+import CommissionEditMode from '../components/pages/Commissions/CommissionEditMode';
+import { deleteFromDB } from '../utils/crudActions.ts/deleteFromDB';
+import { refetchingData } from '../utils/crudActions.ts/refetching';
 
 interface props {
   promoters: PromoterDataI[]
@@ -82,33 +85,27 @@ const Comisiones: FC<props> = ({ promoters, comissions }) => {
   }
 
   const refetchingComissions = async () => {
-    try {
-      const response = await axios.get(process.env.FRONT_URL+`/api/commissions`);
-      refreshComissions(response.data)
-      changeCommission(response.data[0])
-
-    } catch (error) {
-      console.log("error", error)
-    }
+    await refetchingData(
+      '/api/commissions',
+      refreshComissions,
+      changeCommission
+    )
   }
+
 
   const dropComission = async (id: string) => {
-    try {
-      await fetchDataDelete(id)
-      refetchingComissions()
-      closeModal()
-      message.success('La comisión ha sido eliminada exitosamente.')
-
-    } catch (error) {
-      console.log(error)
-      message.error('Ha habido un error, intente mas tarde.')
-    }
-
+    await deleteFromDB(
+      id,
+      'La comisión ha sido eliminada exitosamente.',
+      fetchDataDelete,
+      refetchingComissions,
+      closeModal
+    )
   }
 
-  useEffect(() =>{
+  useEffect(() => {
     setCommission(currentComission)
-  },[currentComission])
+  }, [currentComission])
 
 
   return (
@@ -140,12 +137,31 @@ const Comisiones: FC<props> = ({ promoters, comissions }) => {
           />
         </Col>
         <Col span={16}>
-          <CustomTable
-            type='COMMISSIONS'
-            data={commissionsArray as any[]}
-            loading={loadingList}
-            assignNewPromoter={assignNewComission}
-          />
+          {
+            editMode ? (
+              <>
+                <CardContainer cardStyle={{ marginBottom: '1rem', display: 'flex', justifyContent: 'center' }}>
+                  <Typography.Title level={4} >Modo de edición</Typography.Title>
+                </CardContainer>
+                <CommissionEditMode
+                  changeEditMode={changeEditMode}
+                />
+              </>
+            ) : (
+              <>
+                <CardContainer cardStyle={{ marginBottom: '1rem', display: 'flex', justifyContent: 'center' }}>
+                  <Typography.Title level={4} >Comisiones Registradas</Typography.Title>
+                </CardContainer>
+
+                <CustomTable
+                  type='COMMISSIONS'
+                  data={commissionsArray as any[]}
+                  loading={loadingList}
+                  assignNewPromoter={assignNewComission}
+                />
+              </>
+            )
+          }
         </Col>
       </Row >
       <ModalComission
@@ -155,6 +171,7 @@ const Comisiones: FC<props> = ({ promoters, comissions }) => {
         isLoadingDelete={isLoadingDelete}
         closeModal={closeModal}
         dropComission={dropComission}
+        changeEditMode={changeEditMode}
       />
     </>
   )
@@ -162,8 +179,8 @@ const Comisiones: FC<props> = ({ promoters, comissions }) => {
 
 export const getServerSideProps: GetServerSideProps = async ({ params }) => {
 
-  const promoters = await axios.get(process.env.FRONT_URL+'/api/promoters')
-  const commissions = await axios.get(process.env.FRONT_URL+'/api/commissions')
+  const promoters = await axios.get(process.env.FRONT_URL + '/api/promoters')
+  const commissions = await axios.get(process.env.FRONT_URL + '/api/commissions')
 
   if (!promoters || !commissions) {
     return {

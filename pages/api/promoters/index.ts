@@ -20,7 +20,6 @@ export default async function handler(
         case 'GET':
             return getPromotores(res)
         case 'POST':
-            console.log("entra al promoter post")
             return postPromoter(req, res)
         default:
             return res.status(400).json({ message: 'Endpoint no existe' })
@@ -53,8 +52,6 @@ const postPromoter = async (req: NextApiRequest, res: NextApiResponse<Data>) =>{
         created_at: Date.now(),
         updated_at: Date.now()
     })
-
-    console.log(promoter, newPromoter)
 
     try{
         newPromoter.save()
